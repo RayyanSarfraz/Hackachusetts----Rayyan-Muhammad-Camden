@@ -1,13 +1,17 @@
 """
 Model client.
 
-Thin wrapper around the fine-tuned Qwen model served via vLLM, which exposes an
-OpenAI-compatible ``/v1`` endpoint. We talk to it through LangChain's
-``ChatOpenAI`` (from ``langchain-openai``).
+Thin wrapper around MedGemma (Gemma 3, multimodal) served via vLLM on a
+Hugging Face Inference Endpoint, which exposes an OpenAI-compatible ``/v1``
+endpoint. We talk to it through LangChain's ``ChatOpenAI`` (from
+``langchain-openai``).
 
 The model is OPTIONAL. When ``MODEL_API_BASE_URL`` is not configured, the client
 reports ``available() == False`` and callers must degrade gracefully — never
 fabricate medical facts.
+
+Note: the endpoint scales to zero after idle, so the first request can cold-start
+for 1–3 minutes. The timeout/retries below are sized to ride that out.
 """
 from __future__ import annotations
 
@@ -25,7 +29,7 @@ class ModelClient:
         cfg = getattr(settings, "ENGINE", {})
         self._base_url: str = (cfg.get("MODEL_API_BASE_URL") or "").strip()
         self._api_key: str = cfg.get("MODEL_API_KEY") or "not-needed"
-        self._model_name: str = cfg.get("MODEL_NAME") or "qwen"
+        self._model_name: str = cfg.get("MODEL_NAME") or "google/medgemma-1.5-4b-it"
         self._llm = None
 
     def available(self) -> bool:
@@ -43,8 +47,8 @@ class ModelClient:
             base_url=self._base_url,
             api_key=self._api_key,
             temperature=0,
-            timeout=30,
-            max_retries=1,
+            timeout=180,  # allow for scale-to-zero cold starts (1–3 min)
+            max_retries=2,
         )
         return self._llm
 
