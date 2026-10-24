@@ -9,38 +9,62 @@ the single most useful follow-up question to ask next.
 
 ## Run the demo
 
-### Frontend only (fastest, no backend needed)
+**Judges start here.** Everything below is self-contained with fictional data. The
+fastest path (Option 1) needs only Node.js and takes about one minute. No backend, no
+Docker, no database, no API keys.
+
+### Option 1 — Frontend only (recommended for judging, ~1 min)
+
+Requires [Node.js 18+](https://nodejs.org). The whole demo runs on local fictional
+mock data, so there is nothing else to configure.
 
 ```bash
 cd client
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # open http://localhost:5173
 ```
 
 Click **Load Demo Patient**, review the extracted facts, then work through the ranked
-trial cards, the Next Best Question panel and the travel preference filter.
+trial cards, the Next Best Question panel and the travel preference filter. This
+exercises the full user-facing flow end to end.
 
-### Full stack (Docker)
+### Option 2 — Full stack in one command (Docker)
+
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Compose v2).
+One command builds and starts Postgres, the Django API and the Vite client:
 
 ```bash
 docker compose up --build      # Postgres + Django API (:8000) + Vite client (:5173)
 ```
 
+Then open http://localhost:5173 for the client and http://localhost:8000/api/health/
+for the API health check. No `.env` file is required — the compose file provides safe
+local defaults. Press `Ctrl+C` to stop.
+
 To have the frontend call the backend for fact extraction, set `VITE_USE_HTTP_API=true`
 for the client (for example in `client/.env.local`). The trial list still comes from the
 frontend's built-in data; the backend's `/api/trials/` returns the same four trials.
 
-### Backend without Docker
+### Option 3 — Backend without Docker
+
+Requires Python 3.11+. For a zero-dependency local database, use SQLite (no Postgres
+needed).
 
 ```bash
 cd api
 python -m venv .venv
-source .venv/Scripts/activate      # macOS/Linux: source .venv/bin/activate
+source .venv/bin/activate           # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env    # then set DATABASE_URL, e.g. sqlite:///db.sqlite3 for local use
+cp .env.example .env                # then set DATABASE_URL=sqlite:///db.sqlite3 for local use
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver          # http://localhost:8000
 ```
+
+### Option 4 — Live hosted demo (zero local setup)
+
+The repo ships a [Render](https://render.com) Blueprint (`render.yaml`): in Render choose
+**New + → Blueprint** and point it at this repository to provision the frontend, backend
+and Postgres. Judges with a deployed URL can skip local setup entirely.
 
 ## Tests
 
