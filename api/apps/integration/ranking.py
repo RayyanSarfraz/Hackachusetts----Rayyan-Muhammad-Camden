@@ -11,6 +11,7 @@ All functions are testable without external dependencies.
 """
 
 import math
+from copy import deepcopy
 from typing import Optional
 
 from .contracts import (
@@ -176,14 +177,8 @@ def evaluate_practical_fit(
     """
     reasons: list[str] = []
     
-    # Find nearest location
-    nearest, nearest_distance = find_nearest_location(
-        None,  # Will use trial's computed distance if available
-        trial.locations,
-    )
-    
-    # Use trial's precomputed distance if available, otherwise calculate
-    distance_to_use = trial.nearest_distance_miles or nearest_distance
+    # Distance is computed from patient coordinates by rank_trials.
+    distance_to_use = trial.nearest_distance_miles
     
     # Evaluate travel
     travel_status, travel_reason = evaluate_travel_constraint(
@@ -243,6 +238,7 @@ def derive_clinical_status(trial: TrialCandidate) -> str:
 def rank_trials(
     trials: list[TrialCandidate],
     preferences: PatientPreferences,
+    patient_coords: Optional[tuple[float, float]] = None,
 ) -> list[TrialCandidate]:
     """
     Rank trials by clinical status and practical fit.
@@ -264,20 +260,21 @@ def rank_trials(
     Returns:
         Same trials with clinical_status, practical_fit, and nearest_distance populated
     """
+    # Never mutate caller-owned assessments or shared fixture objects.
+    trials = deepcopy(trials)
     # Evaluate each trial
     for trial in trials:
         # Derive clinical status
         trial.clinical_status = derive_clinical_status(trial)
         
-        # Evaluate practical fit
+        # Recalculate distance for the current patient, including zero miles.
+        if patient_coords is not None:
+            _, trial.nearest_distance_miles = find_nearest_location(
+                patient_coords, trial.locations
+            )
         trial.practical_fit, trial.practical_reasons = evaluate_practical_fit(
             trial, preferences
         )
-        
-        # Compute nearest distance if not already set
-        if trial.nearest_distance_miles is None and trial.locations:
-            _, distance = find_nearest_location(None, trial.locations)
-            trial.nearest_distance_miles = distance
     
     # Sort by ranking priority
     # Lower score = higher priority
@@ -315,7 +312,7 @@ def rank_trials(
         }.get(trial.practical_fit, 1)
         
         # Distance (max distance as fallback for unknowns, so they sort after known)
-        distance = trial.nearest_distance_miles or float("inf")
+        distance = (trial.nearest_distance_miles if trial.nearest_distance_miles is not None else float("inf"))
         
         return (clinical_priority, practical_priority, distance)
     
@@ -325,6 +322,7 @@ def rank_trials(
 def rerank_trials(
     trials: list[TrialCandidate],
     preferences: PatientPreferences,
+    patient_coords: Optional[tuple[float, float]] = None,
 ) -> list[TrialCandidate]:
     """
     Re-rank trials when only preferences have changed.
@@ -342,4 +340,4 @@ def rerank_trials(
         Re-ranked trials with updated practical_fit
     """
     # Simply delegate to rank_trials - it's already pure
-    return rank_trials(trials, preferences)
+    return rank_trials(trials, preferences, patient_coords)

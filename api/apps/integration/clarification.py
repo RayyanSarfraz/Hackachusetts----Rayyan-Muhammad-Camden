@@ -29,7 +29,7 @@ def generate_question_id(fact_key: str, criterion_ids: list[str]) -> str:
     
     Uses hash to create deterministic ID from inputs.
     """
-    combined = f"{fact_key}:{':'.join(sorted(criterion_ids))}"
+    combined = fact_key
     hash_val = hashlib.md5(combined.encode()).hexdigest()[:8]
     return f"q_{hash_val}"
 
@@ -294,11 +294,10 @@ def apply_answer_to_profile(
     else:
         new_facts[question.required_fact_key] = answer
     
-    # Remove from unknowns if present
-    new_unknowns = [
-        u for u in profile.unknowns
-        if u != question.required_fact_key
-    ]
+    # Unknown answers must not remove the fact from the unknowns list.
+    new_unknowns = [u for u in profile.unknowns if u != question.required_fact_key]
+    if answer == "unknown" and question.required_fact_key not in new_unknowns:
+        new_unknowns.append(question.required_fact_key)
     
     return PatientProfile(
         age=profile.age,
@@ -335,7 +334,7 @@ def find_affected_criteria(
     for trial in trials:
         if trial.nct_id in question.related_trial_ids:
             for criterion in trial.criteria:
-                if criterion.criterion_id in question.source_criterion_ids:
+                if criterion.required_fact == question.required_fact_key:
                     affected.append((trial.nct_id, criterion.criterion_id))
     
     return affected

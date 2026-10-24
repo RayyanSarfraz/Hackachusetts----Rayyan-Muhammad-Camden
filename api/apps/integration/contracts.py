@@ -134,7 +134,8 @@ class CriterionAssessment:
     status: CriterionStatus
     evidence: Optional[str] = None
     question: Optional[str] = None
-
+    # Only explicitly supplied boolean rules may be automatically reassessed.
+    expected_value: Optional[bool] = None
     def to_dict(self) -> dict:
         return {
             "criterion_id": self.criterion_id,
@@ -144,6 +145,7 @@ class CriterionAssessment:
             "status": self.status.value,
             "evidence": self.evidence,
             "question": self.question,
+            "expected_value": self.expected_value,
         }
 
 
@@ -241,6 +243,8 @@ class ComparisonResult:
             "has_unknowns": self.has_unknowns,
             "clarification_needed": self.clarification_needed,
             "nearest_distance_miles": self.trial.nearest_distance_miles,
+            "criteria": [c.to_dict() for c in self.trial.criteria],
+            "locations": [loc.to_dict() for loc in self.trial.locations],
         }
 
 

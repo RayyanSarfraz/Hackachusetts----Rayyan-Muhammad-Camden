@@ -52,7 +52,7 @@ def combine_trials_and_patient(
         4. Generate missing data notes and limitations
     """
     # Rank trials (deterministic, no external calls)
-    ranked_trials = rank_trials(trials, patient.preferences)
+    ranked_trials = rank_trials(trials, patient.preferences, patient.location_coords)
     
     # Extract clarification questions
     questions = extract_questions_from_trials(ranked_trials)
@@ -163,6 +163,7 @@ def apply_clarification_answer(
 def update_preferences_only(
     trials: list[TrialCandidate],
     new_preferences: PatientPreferences,
+    patient_coords: Optional[tuple[float, float]] = None,
 ) -> list[TrialCandidate]:
     """
     Re-rank trials when only preferences have changed.
@@ -184,7 +185,7 @@ def update_preferences_only(
         - User changes overnight preference
         - User changes visit frequency preference
     """
-    return rerank_trials(trials, new_preferences)
+    return rerank_trials(trials, new_preferences, patient_coords)
 
 
 # =============================================================================
@@ -270,12 +271,36 @@ def demo_answer_question() -> tuple[ComparisonResponse, ComparisonResponse, str]
         trials, patient, question.question_id, answer
     )
     
-    # For demo purposes, we simulate reassessment by updating criteria
-    # In real system, this would call the clinical assessment module
-    # For now, we'll just return the updated profile and note what changed
+    # Demo-only: criteria remain unknown until clinical reassessment.
     
     # Build a simple "after" comparison noting the update
     # (Full reassessment would require clinical module integration)
     after = combine_trials_and_patient(trials, updated_profile)
     
     return before, after, f"Answered '{answer}' to: {question.display_question}"
+
+
+def assess_explicit_boolean_rules(trials, profile, affected):
+    """Only resolve criteria with an explicit expected boolean value.
+
+    All complex or ambiguous criteria stay UNKNOWN pending clinical assessment.
+    """
+    from .contracts import CriterionStatus
+    from copy import deepcopy
+
+    updated = deepcopy(trials)
+    affected_set = set(affected)
+    for trial in updated:
+        for criterion in trial.criteria:
+            key = f"{trial.nct_id}:{criterion.criterion_id}"
+            if key not in affected_set or criterion.expected_value is None:
+                continue
+            value = profile.medical_facts.get(criterion.required_fact)
+            if type(value) is not bool:
+                continue
+            criterion.status = (CriterionStatus.MET if value == criterion.expected_value
+                                else CriterionStatus.CONFLICT)
+            criterion.evidence = "Reassessed from the supplied yes/no answer"
+    return updated
+
+

@@ -734,3 +734,64 @@ class TestIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRegressionFixes(unittest.TestCase):
+    """Regression coverage for PR #2 review fixes."""
+
+    def test_distance_is_computed_from_patient_coordinates(self):
+        patient = get_synthetic_patient()
+        response = combine_trials_and_patient(get_synthetic_trials(), patient)
+        distances = {r.trial.nct_id: r.trial.nearest_distance_miles for r in response.results}
+        self.assertIsNotNone(distances["NCT05763157"])
+        self.assertGreater(distances["NCT05763157"], 100)
+        self.assertLess(distances["NCT05615089"], 10)
+
+    def test_fixture_getters_return_independent_objects(self):
+        patient1 = get_synthetic_patient()
+        patient1.medical_facts["insulin_use"] = True
+        self.assertNotIn("insulin_use", get_synthetic_patient().medical_facts)
+        trials1 = get_synthetic_trials()
+        trials1[0].criteria.clear()
+        self.assertGreater(len(get_synthetic_trials()[0].criteria), 0)
+
+    def test_ranking_does_not_mutate_input(self):
+        trials = get_synthetic_trials()
+        response = combine_trials_and_patient(trials, get_synthetic_patient())
+        self.assertIsNone(trials[0].nearest_distance_miles)
+        self.assertIsNone(trials[0].clinical_status)
+        self.assertIsNotNone(response.results[0].trial.clinical_status)
+
+    def test_ambiguous_criterion_remains_unknown(self):
+        from .orchestrator import assess_explicit_boolean_rules
+        patient = get_synthetic_patient()
+        patient.medical_facts["insulin_use"] = False
+        trials = get_synthetic_trials()
+        updated = assess_explicit_boolean_rules(
+            trials, patient, ["NCT05763157:NCT05763157-inc-002"]
+        )
+        criterion = next(c for t in updated if t.nct_id == "NCT05763157"
+                         for c in t.criteria if c.required_fact == "insulin_use")
+        self.assertEqual(criterion.status, CriterionStatus.UNKNOWN)
+
+    def test_explicit_boolean_rule_reassesses(self):
+        from .orchestrator import assess_explicit_boolean_rules
+        patient = get_synthetic_patient()
+        patient.medical_facts["cardiovascular_event_history"] = False
+        trials = get_synthetic_trials()
+        updated = assess_explicit_boolean_rules(
+            trials, patient, ["NCT05763157:NCT05763157-exc-001"]
+        )
+        criterion = next(c for t in updated if t.nct_id == "NCT05763157"
+                         for c in t.criteria if c.required_fact == "cardiovascular_event_history")
+        self.assertEqual(criterion.status, CriterionStatus.MET)
+        original = next(c for t in trials if t.nct_id == "NCT05763157"
+                        for c in t.criteria if c.required_fact == "cardiovascular_event_history")
+        self.assertEqual(original.status, CriterionStatus.UNKNOWN)
+
+    def test_unknown_answer_stays_unknown(self):
+        profile = get_synthetic_patient()
+        q = next(q for q in extract_questions_from_trials(get_synthetic_trials())
+                 if q.required_fact_key == "insulin_use")
+        updated = apply_answer_to_profile(profile, q, "unknown")
+        self.assertIn("insulin_use", updated.unknowns)

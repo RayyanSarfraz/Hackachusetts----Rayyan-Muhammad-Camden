@@ -17,6 +17,7 @@ from .orchestrator import (
     combine_trials_and_patient,
     run_synthetic_demo,
     update_preferences_only,
+    assess_explicit_boolean_rules,
 )
 from .fixtures import get_synthetic_trials, get_synthetic_patient
 
@@ -119,6 +120,7 @@ class CompareTrialsView(APIView):
                 status=CriterionStatus(crit_data["status"]),
                 evidence=crit_data.get("evidence"),
                 question=crit_data.get("question"),
+                expected_value=crit_data.get("expected_value"),
             ))
         
         return TrialCandidate(
@@ -131,107 +133,83 @@ class CompareTrialsView(APIView):
         )
 
 
+def _get_workflow_inputs(request):
+    """Stateless workflow: clients must resend the current patient and trials.
+
+    This deliberately avoids using global demo data for patient-specific updates.
+    """
+    patient_data = request.data.get("patient")
+    trials_data = request.data.get("trials")
+    if not isinstance(patient_data, dict) or not isinstance(trials_data, list):
+        raise ValueError("patient (object) and trials (array) are required")
+    parser = CompareTrialsView()
+    return parser._parse_patient(patient_data), [parser._parse_trial(t) for t in trials_data]
+
+
 class AnswerQuestionView(APIView):
+    """Answer a question using the exact patient/trials from the client.
+
+    POST {"patient": {...}, "trials": [...], "question_id": "...", "answer": "no"}
+    Returns updated *sanitized* profile, updated trials, comparison, and
+    remaining criteria that need external clinical reassessment.
     """
-    Answer a clarification question.
-    
-    POST /api/integration/answer/
-    
-    Request body:
-        {
-            "question_id": "...",
-            "answer": "yes" | "no" | "unknown" | ...
-        }
-    
-    Returns:
-        {
-            "updated_profile": {...},
-            "affected_criteria": [...],
-            "requires_reassessment": [...]
-        }
-    
-    Note: This does NOT automatically resolve criteria.
-    The clinical assessment module must reevaluate affected criteria.
-    """
-    
-    permission_classes = []  # Public for demo
-    
+    permission_classes = []  # Synthetic demo only; protect before real patient use
+
     def post(self, request):
         question_id = request.data.get("question_id")
         answer = request.data.get("answer")
-        
         if not question_id or answer is None:
-            return Response(
-                {"error": "question_id and answer are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        
-        # For demo, use synthetic data
-        # In production, this would fetch from session/database
-        patient = get_synthetic_patient()
-        trials = get_synthetic_trials()
-        
+            return Response({"error": "question_id and answer are required"}, status=400)
         try:
-            updated_profile, affected, reassess = apply_clarification_answer(
+            patient, trials = _get_workflow_inputs(request)
+            updated_profile, affected, _ = apply_clarification_answer(
                 trials, patient, question_id, answer
             )
-        except ValueError as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        
+            updated_trials = assess_explicit_boolean_rules(trials, updated_profile, affected)
+            comparison = combine_trials_and_patient(updated_trials, updated_profile)
+            remaining = [
+                f"{t.nct_id}:{c.criterion_id}" for t in updated_trials
+                for c in t.criteria
+                if f"{t.nct_id}:{c.criterion_id}" in affected
+                and c.status.value == "unknown"
+            ]
+        except (KeyError, ValueError, TypeError, AttributeError) as exc:
+            return Response({"error": str(exc)}, status=400)
         return Response({
-            "updated_profile": updated_profile.to_dict(),
+            "updated_profile": updated_profile.to_sanitized_dict(),
             "affected_criteria": affected,
-            "requires_reassessment": reassess,
-            "note": "Clinical criteria must be reassessed by the clinical assessment module.",
+            "requires_reassessment": remaining,
+            "trials": [t.to_dict() for t in updated_trials],
+            "comparison": comparison.to_dict(),
+            "note": "Only explicit boolean rules are automatically reassessed; other criteria remain unknown.",
         })
 
 
 class UpdatePreferencesView(APIView):
-    """
-    Update patient preferences and re-rank trials.
-    
-    POST /api/integration/preferences/
-    
-    Request body:
-        {
-            "max_travel_miles": 100.0,
-            "avoid_overnight_stays": true,
-            "max_visits": 12
-        }
-    
-    Returns:
-        Re-ranked trial comparison (no clinical reassessment).
-    
-    This is the PREFERRED endpoint for preference-only changes.
-    It does NOT call any LLM or clinical assessment services.
-    """
-    
-    permission_classes = []  # Public for demo
-    
+    """Stateless preference update: POST patient, trials, and preferences."""
+    permission_classes = []  # Synthetic demo only
+
     def post(self, request):
-        preferences = PatientPreferences(
-            max_travel_miles=request.data.get("max_travel_miles"),
-            avoid_overnight_stays=request.data.get("avoid_overnight_stays"),
-            max_visits=request.data.get("max_visits"),
-        )
-        
-        # For demo, use synthetic trials
-        # In production, would fetch from session/database
-        trials = get_synthetic_trials()
-        
-        # Re-rank (pure function, no external calls)
-        updated_trials = update_preferences_only(trials, preferences)
-        
-        # Build comparison response
-        from .orchestrator import combine_trials_and_patient
-        patient = get_synthetic_patient()
-        patient.preferences = preferences
-        response = combine_trials_and_patient(updated_trials, patient)
-        
-        return Response(response.to_dict())
+        try:
+            patient, trials = _get_workflow_inputs(request)
+            prefs_data = request.data.get("preferences")
+            if not isinstance(prefs_data, dict):
+                raise ValueError("preferences object is required")
+            current = patient.preferences
+            preferences = PatientPreferences(
+                max_travel_miles=prefs_data.get("max_travel_miles", current.max_travel_miles),
+                avoid_overnight_stays=prefs_data.get("avoid_overnight_stays", current.avoid_overnight_stays),
+                max_visits=prefs_data.get("max_visits", current.max_visits),
+            )
+            patient.preferences = preferences
+            updated_trials = update_preferences_only(trials, preferences, patient.location_coords)
+            comparison = combine_trials_and_patient(updated_trials, patient)
+        except (KeyError, ValueError, TypeError, AttributeError) as exc:
+            return Response({"error": str(exc)}, status=400)
+        return Response({
+            **comparison.to_dict(),
+            "trials": [t.to_dict() for t in updated_trials],
+        })
 
 
 class DemoComparisonView(APIView):

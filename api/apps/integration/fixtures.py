@@ -2,8 +2,11 @@
 Synthetic demo fixtures for Hackachusetts demonstration.
 
 All patient data is FICTIONAL and clearly labeled.
-Trial data references real NCT IDs but uses synthesized criteria for demo.
+Trial data references real NCT IDs but uses INVENTED criteria for demo.
+Do not present these invented criteria as official eligibility rules.
 """
+
+from copy import deepcopy
 
 from .contracts import (
     AnswerType,
@@ -33,6 +36,7 @@ SYNTHETIC_PATIENT = PatientProfile(
         "hba1c_percent": 7.8,
         "egfr_ml_min": 72,  # Kidney function
         "bmi": 31.2,
+        "severe_hypoglycemia_history": False,
     },
     location="Boston, MA",
     location_coords=(42.3601, -71.0589),
@@ -105,7 +109,8 @@ TRIAL_MATCH = TrialCandidate(
             criterion_source="https://clinicaltrials.gov/study/NCT05615089",
             required_fact="severe_hypoglycemia_history",
             status=CriterionStatus.MET,
-            evidence="Patient record documents no severe hypoglycemia episodes in the past 6 months",
+            evidence="Synthetic patient profile reports no severe hypoglycemia",
+            expected_value=False,
         ),
     ],
     clinical_status=None,  # Will be derived
@@ -139,11 +144,11 @@ TRIAL_CONFLICT = TrialCandidate(
         ),
         CriterionAssessment(
             criterion_id="NCT04792886-exc-001",
-            criterion_text="eGFR less than 60 mL/min/1.73m²",
+            criterion_text="Demo inclusion requirement: eGFR at least 90 mL/min/1.73m²",
             criterion_source="https://clinicaltrials.gov/study/NCT04792886",
             required_fact="egfr_ml_min",
             status=CriterionStatus.CONFLICT,
-            evidence="Patient eGFR is 72 mL/min, above exclusion threshold of 60",
+            evidence="Synthetic patient eGFR is 72 mL/min, below the demo requirement of 90",
         ),
         CriterionAssessment(
             criterion_id="NCT04792886-exc-002",
@@ -152,6 +157,7 @@ TRIAL_CONFLICT = TrialCandidate(
             required_fact="sglt2_inhibitor_use",
             status=CriterionStatus.UNKNOWN,
             question="Are you currently taking an SGLT2 inhibitor medication (such as empagliflozin, canagliflozin, or dapagliflozin)?",
+            expected_value=False,
         ),
     ],
     clinical_status=None,
@@ -213,6 +219,7 @@ TRIAL_UNKNOWN = TrialCandidate(
             required_fact="cardiovascular_event_history",
             status=CriterionStatus.UNKNOWN,
             question="Have you had a heart attack or stroke within the past 3 months?",
+            expected_value=False,
         ),
     ],
     clinical_status=None,
@@ -223,12 +230,12 @@ TRIAL_UNKNOWN = TrialCandidate(
 
 def get_synthetic_trials() -> list[TrialCandidate]:
     """Get synthetic trial fixtures for demonstration."""
-    return [TRIAL_MATCH, TRIAL_CONFLICT, TRIAL_UNKNOWN]
+    return deepcopy([TRIAL_MATCH, TRIAL_CONFLICT, TRIAL_UNKNOWN])
 
 
 def get_synthetic_patient() -> PatientProfile:
     """Get synthetic patient profile for demonstration."""
-    return SYNTHETIC_PATIENT
+    return deepcopy(SYNTHETIC_PATIENT)
 
 
 # =============================================================================
