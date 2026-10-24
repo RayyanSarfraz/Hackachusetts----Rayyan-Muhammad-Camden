@@ -60,6 +60,13 @@ through the three-step dashboard: intake → review facts → match & refine.
 
 ## Backend integration
 
-The demo never assumes endpoints exist. When a backend is ready, implement
-`HttpTrialBridgeApi implements TrialBridgeApi` in `src/api/adapter.ts` and swap the
-exported `api`. The Vite dev server already proxies `/api` to the Django backend.
+`src/api/adapter.ts` has two implementations of `TrialBridgeApi`:
+
+- `LocalMockApi` (default): offline mock data and the local parser.
+- `HttpTrialBridgeApi`: calls the Django backend's `GET /api/trials/` and
+  `POST /api/extract-facts/`, which return the same shapes as the mock.
+
+Set `VITE_USE_HTTP_API=true` to use the HTTP version. Only fact extraction goes
+through it today: `AppContext.tsx` still seeds trials from `DEMO_TRIALS` directly,
+so `getTrials()` is not called yet. The Vite dev server proxies `/api` to the
+backend (`VITE_API_PROXY_TARGET`, default `http://localhost:8000`).
