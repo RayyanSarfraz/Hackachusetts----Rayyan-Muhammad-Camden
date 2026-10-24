@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../state/AppContext'
 import { Accordion } from './ui/Accordion'
-import { FACT_DEFINITIONS } from '../data/demoPatient'
+import { FACT_DEFINITIONS } from '../data/facts'
 
 export function NextBestQuestion() {
   const { state, dispatch, nextQuestion, candidateQuestions } = useApp()

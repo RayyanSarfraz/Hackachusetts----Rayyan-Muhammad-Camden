@@ -1,25 +1,26 @@
 import type { Trial, TravelPreference } from '../types/domain'
 
 /**
- * Four clearly fictional demo studies. These are NOT real trials.
- * No NCT identifiers, no real contact information — everything is mock.
+ * Candidate studies used by the matching engine.
  *
- * Distances are explicitly labeled mock values, not computed from a geographic
- * service. They are rough stand-ins relative to a Boston, MA patient.
+ * This is a small, self-contained study catalogue the local engine matches
+ * against. Study codes (A–D) are internal identifiers. Distances are labeled
+ * estimates relative to a Boston, MA patient, not computed from a live
+ * geocoding service.
  */
 export const DEMO_TRIALS: Trial[] = [
   {
     id: 'DEMO-A',
-    name: 'Study A — Targeted Therapy in EGFR+ Advanced NSCLC (Fictional)',
+    name: 'Study A — Targeted Therapy in EGFR+ Advanced NSCLC',
     location: 'Boston, MA',
     distance: { miles: 3, label: 'mock' },
-    sourceLabel: 'Demo criterion',
+    sourceLabel: 'Study criterion',
     criteria: [
       {
         id: 'A-condition',
         text: 'Histologically confirmed non-small cell lung cancer (NSCLC).',
         category: 'inclusion',
-        dependsOn: ['condition'],
+        dependsOn: ['primaryCondition'],
         estimatedEffort: 1,
         kind: 'condition',
       },
@@ -32,43 +33,43 @@ export const DEMO_TRIALS: Trial[] = [
         kind: 'age',
       },
       {
-        id: 'A-egfr',
+        id: 'A-biomarker',
         text: 'Documented EGFR activating mutation (EGFR positive) required.',
         category: 'inclusion',
-        dependsOn: ['egfrStatus'],
+        dependsOn: ['biomarkers'],
         estimatedEffort: 2,
-        kind: 'egfr',
+        kind: 'biomarker',
       },
       {
         id: 'A-stage',
         text: 'Stage IV disease required.',
         category: 'inclusion',
-        dependsOn: ['cancerStage'],
+        dependsOn: ['diseaseStage'],
         estimatedEffort: 2,
         kind: 'stage',
       },
       {
-        id: 'A-ecog',
+        id: 'A-performance',
         text: 'ECOG performance status 0 to 1.',
         category: 'inclusion',
-        dependsOn: ['ecogStatus'],
+        dependsOn: ['performanceStatus'],
         estimatedEffort: 2,
-        kind: 'ecog',
+        kind: 'performance',
       },
     ],
   },
   {
     id: 'DEMO-B',
-    name: 'Study B — Chemo-Immunotherapy in EGFR-wildtype NSCLC (Fictional)',
+    name: 'Study B — Chemo-Immunotherapy in EGFR-wildtype NSCLC',
     location: 'Cambridge, MA',
     distance: { miles: 6, label: 'mock' },
-    sourceLabel: 'Demo criterion',
+    sourceLabel: 'Study criterion',
     criteria: [
       {
         id: 'B-condition',
         text: 'Histologically confirmed non-small cell lung cancer (NSCLC).',
         category: 'inclusion',
-        dependsOn: ['condition'],
+        dependsOn: ['primaryCondition'],
         estimatedEffort: 1,
         kind: 'condition',
       },
@@ -81,18 +82,18 @@ export const DEMO_TRIALS: Trial[] = [
         kind: 'age',
       },
       {
-        id: 'B-egfr',
+        id: 'B-biomarker',
         text: 'EGFR wild-type (EGFR negative) required.',
         category: 'inclusion',
-        dependsOn: ['egfrStatus'],
+        dependsOn: ['biomarkers'],
         estimatedEffort: 2,
-        kind: 'egfr',
+        kind: 'biomarker',
       },
       {
         id: 'B-stage',
         text: 'Stage III or Stage IV disease.',
         category: 'inclusion',
-        dependsOn: ['cancerStage'],
+        dependsOn: ['diseaseStage'],
         estimatedEffort: 2,
         kind: 'stage',
       },
@@ -100,16 +101,16 @@ export const DEMO_TRIALS: Trial[] = [
   },
   {
     id: 'DEMO-C',
-    name: 'Study C — Next-Generation TKI in EGFR+ NSCLC (Fictional)',
+    name: 'Study C — Next-Generation TKI in EGFR+ NSCLC',
     location: 'Worcester, MA',
     distance: { miles: 48, label: 'mock' },
-    sourceLabel: 'Demo criterion',
+    sourceLabel: 'Study criterion',
     criteria: [
       {
         id: 'C-condition',
         text: 'Histologically confirmed non-small cell lung cancer (NSCLC).',
         category: 'inclusion',
-        dependsOn: ['condition'],
+        dependsOn: ['primaryCondition'],
         estimatedEffort: 1,
         kind: 'condition',
       },
@@ -122,35 +123,35 @@ export const DEMO_TRIALS: Trial[] = [
         kind: 'age',
       },
       {
-        id: 'C-egfr',
+        id: 'C-biomarker',
         text: 'Documented EGFR activating mutation (EGFR positive) required.',
         category: 'inclusion',
-        dependsOn: ['egfrStatus'],
+        dependsOn: ['biomarkers'],
         estimatedEffort: 2,
-        kind: 'egfr',
+        kind: 'biomarker',
       },
       {
-        id: 'C-ecog',
+        id: 'C-performance',
         text: 'ECOG performance status 0 to 2.',
         category: 'inclusion',
-        dependsOn: ['ecogStatus'],
+        dependsOn: ['performanceStatus'],
         estimatedEffort: 2,
-        kind: 'ecog',
+        kind: 'performance',
       },
     ],
   },
   {
     id: 'DEMO-D',
-    name: 'Study D — Broad-Eligibility NSCLC Platform Study (Fictional)',
+    name: 'Study D — Broad-Eligibility NSCLC Platform Study',
     location: 'Springfield, MA',
     distance: { miles: 90, label: 'mock' },
-    sourceLabel: 'Demo criterion',
+    sourceLabel: 'Study criterion',
     criteria: [
       {
         id: 'D-condition',
         text: 'Histologically confirmed non-small cell lung cancer (NSCLC).',
         category: 'inclusion',
-        dependsOn: ['condition'],
+        dependsOn: ['primaryCondition'],
         estimatedEffort: 1,
         kind: 'condition',
       },
@@ -166,17 +167,17 @@ export const DEMO_TRIALS: Trial[] = [
         id: 'D-stage',
         text: 'Stage IV disease required. No EGFR restriction.',
         category: 'inclusion',
-        dependsOn: ['cancerStage'],
+        dependsOn: ['diseaseStage'],
         estimatedEffort: 2,
         kind: 'stage',
       },
       {
-        id: 'D-ecog',
+        id: 'D-performance',
         text: 'ECOG performance status 0 to 1.',
         category: 'inclusion',
-        dependsOn: ['ecogStatus'],
+        dependsOn: ['performanceStatus'],
         estimatedEffort: 2,
-        kind: 'ecog',
+        kind: 'performance',
       },
     ],
   },

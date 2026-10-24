@@ -45,7 +45,7 @@ function App() {
         <WorkflowSteps current={state.step} />
 
         {state.step === 'intake' && (
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-5xl">
             <PatientIntake />
           </div>
         )}

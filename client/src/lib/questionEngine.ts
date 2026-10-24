@@ -30,26 +30,26 @@ import { assessTrials } from './assessor'
 const QUESTION_TEMPLATES: Partial<
   Record<FactKey, { text: string; options: QuestionOption[] }>
 > = {
-  egfrStatus: {
-    text: 'Does the existing medical record document an EGFR mutation result?',
+  biomarkers: {
+    text: 'Do your pathology or molecular reports document an EGFR result?',
     options: [
-      { id: 'egfr-pos', label: 'EGFR positive', value: 'positive', isUnknown: false },
-      { id: 'egfr-neg', label: 'EGFR negative', value: 'negative', isUnknown: false },
+      { id: 'egfr-pos', label: 'EGFR positive', value: ['EGFR positive'], isUnknown: false },
+      { id: 'egfr-neg', label: 'EGFR negative', value: ['EGFR negative'], isUnknown: false },
       { id: 'egfr-unk', label: 'Unknown / not documented', value: null, isUnknown: true },
     ],
   },
-  cancerStage: {
-    text: 'Does the existing medical record document a cancer stage?',
+  diseaseStage: {
+    text: 'Do your records document a disease stage?',
     options: [
-      { id: 'stage-1', label: 'Stage I', value: 'I', isUnknown: false },
-      { id: 'stage-2', label: 'Stage II', value: 'II', isUnknown: false },
-      { id: 'stage-3', label: 'Stage III', value: 'III', isUnknown: false },
-      { id: 'stage-4', label: 'Stage IV', value: 'IV', isUnknown: false },
+      { id: 'stage-1', label: 'Stage I', value: 'Stage I', isUnknown: false },
+      { id: 'stage-2', label: 'Stage II', value: 'Stage II', isUnknown: false },
+      { id: 'stage-3', label: 'Stage III', value: 'Stage III', isUnknown: false },
+      { id: 'stage-4', label: 'Stage IV', value: 'Stage IV', isUnknown: false },
       { id: 'stage-unk', label: 'Unknown / not documented', value: null, isUnknown: true },
     ],
   },
-  ecogStatus: {
-    text: 'Does the existing medical record document an ECOG performance status?',
+  performanceStatus: {
+    text: 'Do your clinical notes document an ECOG performance status?',
     options: [
       { id: 'ecog-0', label: 'ECOG 0', value: 0, isUnknown: false },
       { id: 'ecog-1', label: 'ECOG 1', value: 1, isUnknown: false },
@@ -60,19 +60,35 @@ const QUESTION_TEMPLATES: Partial<
     ],
   },
   age: {
-    text: 'Does the existing medical record document the patient age?',
+    text: 'Do your records document your age?',
     options: [{ id: 'age-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
   },
-  condition: {
-    text: 'Does the existing medical record document the diagnosis?',
+  sex: {
+    text: 'Do your records document your sex?',
+    options: [
+      { id: 'sex-m', label: 'Male', value: 'male', isUnknown: false },
+      { id: 'sex-f', label: 'Female', value: 'female', isUnknown: false },
+      { id: 'sex-unk', label: 'Unknown / not documented', value: null, isUnknown: true },
+    ],
+  },
+  primaryCondition: {
+    text: 'Do your records document your primary diagnosis?',
     options: [{ id: 'cond-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
   },
   location: {
-    text: 'Does the existing medical record document the patient location?',
+    text: 'Do your records document your location?',
     options: [{ id: 'loc-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
   },
-  previousTreatment: {
-    text: 'Does the existing medical record document previous treatment?',
+  medications: {
+    text: 'Do your records document your current medications?',
+    options: [{ id: 'med-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
+  },
+  allergies: {
+    text: 'Do your records document any allergies?',
+    options: [{ id: 'alg-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
+  },
+  priorTreatments: {
+    text: 'Do your records document prior treatments?',
     options: [{ id: 'trt-unk', label: 'Unknown / not documented', value: null, isUnknown: true }],
   },
 }
@@ -80,12 +96,15 @@ const QUESTION_TEMPLATES: Partial<
 function factLabel(key: FactKey): string {
   const map: Record<FactKey, string> = {
     age: 'age',
-    condition: 'diagnosis',
+    sex: 'sex',
+    primaryCondition: 'diagnosis',
     location: 'location',
-    previousTreatment: 'previous treatment',
-    egfrStatus: 'EGFR status',
-    cancerStage: 'cancer stage',
-    ecogStatus: 'ECOG performance status',
+    medications: 'current medications',
+    allergies: 'allergies',
+    priorTreatments: 'prior treatments',
+    biomarkers: 'biomarker status',
+    diseaseStage: 'disease stage',
+    performanceStatus: 'ECOG performance status',
   }
   return map[key]
 }
@@ -99,13 +118,16 @@ interface FactGroup {
 
 /** Stable ordering used only to break exact ties deterministically. */
 const TIE_BREAK_ORDER: FactKey[] = [
-  'egfrStatus',
-  'cancerStage',
-  'ecogStatus',
+  'biomarkers',
+  'diseaseStage',
+  'performanceStatus',
   'age',
-  'condition',
+  'sex',
+  'primaryCondition',
   'location',
-  'previousTreatment',
+  'medications',
+  'allergies',
+  'priorTreatments',
 ]
 
 export interface BuildQuestionsResult {

@@ -9,15 +9,28 @@
  * (parser, assessor, ranking, question engine) can be unit tested in isolation.
  */
 
-/** The set of patient facts the demo understands and reasons about. */
+/**
+ * The set of patient facts the app reasons about.
+ *
+ * These are deliberately general and realistic for a patient-facing intake:
+ * the things a person either knows about themselves or can find in records
+ * exported from a patient portal / health app.
+ *
+ *  - Self-known            : age, sex, primaryCondition, location
+ *  - Known or from records : medications, allergies, priorTreatments
+ *  - Derived from documents : biomarkers, diseaseStage, performanceStatus
+ */
 export type FactKey =
   | 'age'
-  | 'condition'
+  | 'sex'
+  | 'primaryCondition'
   | 'location'
-  | 'previousTreatment'
-  | 'egfrStatus'
-  | 'cancerStage'
-  | 'ecogStatus'
+  | 'medications'
+  | 'allergies'
+  | 'priorTreatments'
+  | 'biomarkers'
+  | 'diseaseStage'
+  | 'performanceStatus'
 
 /** A patient fact is always present as a key; its value may be Unknown. */
 export interface PatientFact<T = unknown> {
@@ -51,22 +64,48 @@ export interface PatientProfile {
   rawNotes: string
 }
 
-/** EGFR mutation status values the demo supports. */
-export type EgfrStatus = 'positive' | 'negative'
+/** How an intake document's text got into the app. */
+export type IntakeDocumentKind = 'paste' | 'txt' | 'pdf' | 'csv' | 'json' | 'xml'
+
+/**
+ * A single source document in the intake tray.
+ *
+ * Multiple documents can be added (pasted text, or uploaded pdf/txt/csv/json/
+ * xml); the user toggles between them and chooses which ones feed the
+ * analyzer. All content is held in memory only — nothing is uploaded anywhere.
+ *
+ * Every document is normalized to plain `text` on load, so a single consistent
+ * text payload can be fed to the local parser and, later, the hosted model.
+ */
+export interface IntakeDocument {
+  id: string
+  /** Display name, e.g. "Pasted notes" or "discharge-summary.pdf". */
+  name: string
+  kind: IntakeDocumentKind
+  /** Normalized plain text used for analysis and for the hosted model. */
+  text: string
+  /** The original raw file text (for CSV/JSON/XML/TXT preview). */
+  raw?: string
+  /** True while a file is still being parsed/extracted. */
+  loading: boolean
+  /** Extraction / read error, if any. */
+  error?: string
+  /** Page count for PDFs (for the preview + label). */
+  pageCount?: number
+  /** Row count for CSVs. */
+  rowCount?: number
+  /** Column count for CSVs. */
+  columnCount?: number
+  /** FHIR resource / record count for JSON / XML. */
+  resourceCount?: number
+  /** Whether this document's text is included when analyzing. */
+  included: boolean
+  /** Raw PDF bytes kept in memory for canvas preview (PDFs only). */
+  pdfBytes?: ArrayBuffer
+}
 
 /** How a criterion is categorized in the trial record. */
 export type CriterionCategory = 'inclusion' | 'exclusion'
-
-/**
- * Optional structured rule for a criterion. When present, the assessor uses
- * these thresholds instead of the hardcoded demo values.
- */
-export type CriterionRule =
-  | { minAge?: number; maxAge?: number }
-  | { egfr: 'positive' | 'negative' }
-  /** Allowed stages, upper-case Roman numerals, e.g. ['III', 'IV']. */
-  | { stages: string[] }
-  | { ecogMax: number }
 
 /**
  * A single eligibility criterion from a (fictional) trial record.
@@ -88,20 +127,21 @@ export interface EligibilityCriterion {
   kind:
     | 'condition'
     | 'age'
-    | 'egfr'
+    | 'sex'
+    | 'biomarker'
     | 'stage'
-    | 'ecog'
+    | 'performance'
     | 'location'
+    | 'medications'
+    | 'allergies'
     | 'treatment'
-  /** Structured thresholds for this criterion, if any. */
-  rule?: CriterionRule
 }
 
 export interface TrialDistance {
   /** Explicitly labeled mock distance in miles (not computed from geo). */
   miles: number
-  /** 'mock' for demo trials, 'approximate' for real trials (rough estimate). */
-  label: 'mock' | 'approximate'
+  /** Whether this number is a verified value or a labeled mock estimate. */
+  label: 'mock'
 }
 
 export interface Trial {
@@ -113,15 +153,7 @@ export interface Trial {
   distance: TrialDistance
   criteria: EligibilityCriterion[]
   /** Source label for evidence provenance. */
-  sourceLabel: 'Demo criterion' | 'ClinicalTrials.gov'
-  /** ClinicalTrials.gov identifier for real trials (equals `id`). */
-  nctId?: string
-  /** https://clinicaltrials.gov/study/<nctId> */
-  sourceUrl?: string
-  /** Recruitment status from the dataset, e.g. "RECRUITING". */
-  recruitmentStatus?: string
-  /** Trial phase from the dataset. */
-  phase?: string
+  sourceLabel: string
 }
 
 /** The three possible assessments for an individual criterion. */
@@ -155,9 +187,10 @@ export interface QuestionOption {
   label: string
   /**
    * The resolved value this option maps to, or `null` for the
-   * "Unknown / not documented" option.
+   * "Unknown / not documented" option. List facts (e.g. biomarkers) use an
+   * array.
    */
-  value: string | number | null
+  value: string | number | string[] | null
   /** True for the explicit Unknown / not documented option. */
   isUnknown: boolean
 }
@@ -183,7 +216,7 @@ export interface QuestionAnswer {
   factKey: FactKey
   /** The option id that was chosen. */
   optionId: string
-  value: string | number | null
+  value: string | number | string[] | null
   isUnknown: boolean
   /** When the user answered (epoch ms) — used for ordering history. */
   answeredAt: number

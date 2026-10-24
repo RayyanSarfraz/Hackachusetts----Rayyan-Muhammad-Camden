@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { HttpTrialBridgeApi, LocalMockApi } from '../adapter'
-import { DEMO_PATIENT_NOTES } from '../../data/demoPatient'
+import { SAMPLE_NOTES } from '../../lib/__tests__/fixtures'
 
 /**
  * Contract-parity test.
@@ -28,9 +28,9 @@ describe.skipIf(!RUN)('backend ↔ frontend contract parity', () => {
     expect(remote).toEqual(mock)
   })
 
-  it('extractFacts() matches the local parser for the demo note', async () => {
-    const remote = await http.extractFacts(DEMO_PATIENT_NOTES)
-    const mock = await local.extractFacts(DEMO_PATIENT_NOTES)
+  it('extractFacts() matches the local parser for a sample note', async () => {
+    const remote = await http.extractFacts(SAMPLE_NOTES)
+    const mock = await local.extractFacts(SAMPLE_NOTES)
     // Backend uses a different id namespace by design; compare facts + notes.
     expect(remote.facts).toEqual(mock.facts)
     expect(remote.rawNotes).toEqual(mock.rawNotes)

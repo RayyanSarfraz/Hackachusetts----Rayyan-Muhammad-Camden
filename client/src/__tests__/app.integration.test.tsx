@@ -2,21 +2,30 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import App from '../App'
 import { AppProvider } from '../state/AppContext'
-import { DEMO_TRIALS } from '../data/trials'
+import { SAMPLE_NOTES } from '../lib/__tests__/fixtures'
 
 function renderApp() {
   return render(
-    <AppProvider initialTrials={DEMO_TRIALS}>
+    <AppProvider>
       <App />
     </AppProvider>,
   )
 }
 
-/** Load demo (async parse) then advance to the matching step. */
+/** Add the sample notes as a text document and analyze them. */
+async function analyzeSampleNotes() {
+  // The paste area lives inside a collapsible <details>; the textarea is still
+  // in the DOM and reachable by placeholder regardless of open state.
+  const textarea = screen.getByPlaceholderText(/paste notes here/i)
+  fireEvent.change(textarea, { target: { value: SAMPLE_NOTES } })
+  fireEvent.click(screen.getByRole('button', { name: /add text document/i }))
+  fireEvent.click(screen.getByRole('button', { name: /^analyze/i }))
+  await screen.findByRole('heading', { name: /review your health information/i })
+}
+
+/** Analyze, then advance to the matching step. */
 async function gotoMatching() {
-  fireEvent.click(screen.getByRole('button', { name: /load demo patient/i }))
-  // Wait for the async extraction to land on the review step.
-  await screen.findByRole('heading', { name: /review extracted facts/i })
+  await analyzeSampleNotes()
   fireEvent.click(
     screen.getByRole('button', { name: /confirm .* matching trials/i }),
   )
@@ -24,17 +33,17 @@ async function gotoMatching() {
 }
 
 describe('TrialBridge app integration', () => {
-  it('loads the demo patient and shows extracted facts, keeping unknowns Unknown', async () => {
+  it('extracts facts from pasted notes, keeping unknowns Unknown', async () => {
     renderApp()
-    fireEvent.click(screen.getByRole('button', { name: /load demo patient/i }))
-
-    await screen.findByRole('heading', { name: /review extracted facts/i })
+    await analyzeSampleNotes()
 
     const ageInput = screen.getByLabelText('Age') as HTMLInputElement
     expect(ageInput.value).toBe('54')
 
-    const egfrInput = screen.getByLabelText('EGFR status') as HTMLInputElement
-    expect(egfrInput.value).toBe('')
+    const biomarkerInput = screen.getByLabelText(
+      /biomarkers/i,
+    ) as HTMLInputElement
+    expect(biomarkerInput.value).toBe('')
   })
 
   it('shows ranked trial cards and a prioritized Next Best Question', async () => {
