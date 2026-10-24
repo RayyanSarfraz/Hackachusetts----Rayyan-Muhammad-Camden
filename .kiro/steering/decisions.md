@@ -43,3 +43,43 @@ Status: active.
 Decision: PostgreSQL via `psycopg` 3, configured through `DATABASE_URL`.
 Why: robust relational store suitable for the app's data and for production.
 Status: active.
+
+## 2026-10-24 — Integration layer as pure functions
+Decision: Ranking and clarification are pure functions with no external dependencies.
+Why: Deterministic behavior, easy testing, no LLM calls for preference changes.
+Status: active.
+
+## 2026-10-24 — Three-valued eligibility uncertainty
+Decision: Criterion status is always `met`, `conflict`, or `unknown`. Never binary eligible/ineligible.
+Why: Unknown information must be explicitly tracked, not conflated with ineligibility.
+Status: active.
+
+## 2026-10-24 — Clinical conflicts cannot be overridden by convenience
+Decision: Ranking always prioritizes clinical status over practical convenience.
+Why: A nearby trial with a clinical conflict is still a conflict; safety first.
+Status: active.
+
+## 2026-10-24 — Privacy boundary for patient profiles
+Decision: Patient profiles are sanitized for display; raw medical notes never exposed.
+Why: Privacy-conscious design even for fictional demo data.
+Status: active.
+
+## 2026-10-24 — Integration layer as pure functions
+Decision: Ranking and clarification are pure functions with no external dependencies.
+Why: Deterministic behavior, easy testing, no LLM calls for preference changes.
+Status: active.
+
+## 2026-10-24 — Three-valued eligibility uncertainty
+Decision: Criterion status is always `met`, `conflict`, or `unknown`. Never binary eligible/ineligible.
+Why: Unknown information must be explicitly tracked, not conflated with ineligibility.
+Status: active.
+
+## 2026-10-24 — Clinical conflicts cannot be overridden by convenience
+Decision: Ranking always prioritizes clinical status over practical convenience.
+Why: A nearby trial with a clinical conflict is still a conflict; safety first.
+Status: active.
+
+## 2026-10-24 — Privacy boundary for patient profiles
+Decision: Patient profiles are sanitized for display; raw medical notes never exposed.
+Why: Privacy-conscious design even for fictional demo data.
+Status: active.

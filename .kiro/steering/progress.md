@@ -17,18 +17,30 @@ _Last updated: 2026-10-24_
 - `users` module: custom email-based user, JWT auth (register / login / refresh /
   logout with blacklist), and `/api/users/me/`.
 - PostgreSQL + CORS + env-based configuration wired up (`.env.example` provided).
+- **`integration` module (2026-10-24)**: Trial comparison, ranking, clarification engine.
+  - Data contracts for PatientProfile, TrialCandidate, CriterionAssessment
+  - Deterministic ranking with conflict preservation
+  - Clarification question extraction and deduplication
+  - Privacy-conscious response sanitization
+  - Synthetic demo fixtures with 3 trial scenarios
+  - API endpoints: `/api/integration/compare/`, `/answer/`, `/preferences/`, `/demo/`
+  - Comprehensive test suite (35+ tests)
 
 ## In progress
 
-- _(none recorded yet)_
+- Awaiting clinical assessment module integration from teammate
+- Awaiting patient extraction integration from Muhammad
+- Frontend integration pending
 
 ## Next steps
 
-- Define the concrete product goal and feature set (fill in `product.md`).
-- Scaffold the `client/` frontend (CORS points at a Vite dev server on `:5173`).
-- Add the first domain feature module(s) beyond `users`.
-- Add tests for the auth flow (`apps/users/tests.py` is currently a stub).
+- Connect clinical assessment module to criterion evaluation
+- Connect patient extraction to profile input
+- Build frontend comparison UI
+- Add tests for the auth flow (`apps/users/tests.py` is currently a stub)
 
 ## Blocked / open questions
 
-- Product scope and the frontend framework choice are not yet documented in-repo.
+- Clinical assessment API contract not yet defined by teammate
+- Patient extraction output format not yet finalized by Muhammad
+- Frontend framework and component structure not yet defined
