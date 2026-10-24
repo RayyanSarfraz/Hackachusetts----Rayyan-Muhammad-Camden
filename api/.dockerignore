@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local env / secrets — never bake into the image
+.env
+.env.*
+!.env.example
+
+# Databases & logs
+*.sqlite3
+*.log
+
+# Static/media collected at build/run time
+staticfiles/
+media/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# VCS
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+compose*.yaml

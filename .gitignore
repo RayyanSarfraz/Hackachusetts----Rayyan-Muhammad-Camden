@@ -1,0 +1,39 @@
+# Global ignores for the whole monorepo.
+# Backend- and frontend-specific rules live in api/.gitignore and client/.gitignore.
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Python (in case tooling runs from the root)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node (in case tooling runs from the root)
+node_modules/
+
+# Docker
+*.pid
+
+# Build artifacts
+dist/
+build/

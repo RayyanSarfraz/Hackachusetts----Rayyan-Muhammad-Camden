@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# npm registry credentials — never bake into image layers
+**/.npmrc
+
+# Logs & caches
+*.log
+npm-debug.log*
+.vite/
+.cache/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# VCS
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+compose*.yaml
