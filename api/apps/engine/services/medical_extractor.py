@@ -1,8 +1,8 @@
 """
 Medical entity extraction from free-text clinical notes.
 
-Sends the (untrusted) medical note to the fine-tuned Qwen model via
-``model_client`` and returns a structured JSON set of entities:
+Sends the (untrusted) medical note to the MedGemma model via ``model_client``
+and returns a structured JSON set of entities:
 
     diagnoses/conditions, symptoms, medications (+ dosages), lab tests/
     measurements, previous treatments, relevant dates/durations.
@@ -14,11 +14,14 @@ Hard rules:
 - When the model is unavailable or returns something unparseable, we return a
   clean ``{"available": False, "entities": <empty>}`` — never fabricated data.
 - Evidence snippets from the note are preserved when the model provides them.
+- MedGemma is a reasoning model: it emits a "thinking" block before the final
+  answer, so ``_parse_model_json`` strips that and takes the last JSON object.
 """
 from __future__ import annotations
 
 import json
 import logging
+import re
 
 from apps.engine.services.model_client import get_model_client
 
@@ -53,29 +56,78 @@ def empty_entities() -> dict:
     return {key: [] for key in ENTITY_KEYS}
 
 
+# Fenced ```json ... ``` code blocks (json/JSON tag optional).
+_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
+# Gemma "thinking" models emit reasoning wrapped in <unusedNN> ... markers.
+_THINK_MARKER_RE = re.compile(r"<unused\d+>|</?think>|</?thought>", re.IGNORECASE)
+
+
+def _strip_thinking(text: str) -> str:
+    """
+    Drop a leading reasoning/thinking block, if present.
+
+    Reasoning models (e.g. Gemma 3) prepend a "<unused94>thought ...<unused95>"
+    block before the final answer. The real answer comes after the LAST such
+    marker, so keep only the tail.
+    """
+    markers = list(_THINK_MARKER_RE.finditer(text))
+    if markers:
+        text = text[markers[-1].end():]
+    return text
+
+
+def _try_load(candidate: str) -> dict | None:
+    try:
+        data = json.loads(candidate)
+    except (ValueError, TypeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
 def _parse_model_json(raw: str) -> dict | None:
-    """Best-effort parse of the model's JSON response."""
+    """
+    Best-effort parse of the model's JSON response.
+
+    Handles plain JSON, fenced code blocks, and reasoning-model output where a
+    "thinking" preamble precedes the real answer. Prefers the LAST fenced block
+    / JSON object, since reasoning models often include an illustrative JSON
+    snippet inside their thoughts before emitting the final one.
+    """
     if not raw:
         return None
-    text = raw.strip()
-    # Tolerate fenced code blocks.
-    if text.startswith("```"):
-        text = text.strip("`")
-        if "\n" in text:
-            text = text.split("\n", 1)[1]
-    try:
-        data = json.loads(text)
-    except (ValueError, TypeError):
-        # Try to salvage the first {...} block.
-        start, end = text.find("{"), text.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            try:
-                data = json.loads(text[start : end + 1])
-            except (ValueError, TypeError):
-                return None
-        else:
-            return None
-    return data if isinstance(data, dict) else None
+
+    text = _strip_thinking(raw.strip())
+
+    # 1. Prefer the last fenced ```json block (the final answer).
+    fences = _FENCE_RE.findall(text)
+    for block in reversed(fences):
+        parsed = _try_load(block.strip())
+        if parsed is not None:
+            return parsed
+
+    # 2. Try the whole (de-fenced) text.
+    parsed = _try_load(text)
+    if parsed is not None:
+        return parsed
+
+    # 3. Salvage the LAST balanced {...} object in the text.
+    end = text.rfind("}")
+    while end != -1:
+        depth = 0
+        for i in range(end, -1, -1):
+            ch = text[i]
+            if ch == "}":
+                depth += 1
+            elif ch == "{":
+                depth -= 1
+                if depth == 0:
+                    parsed = _try_load(text[i : end + 1])
+                    if parsed is not None:
+                        return parsed
+                    break
+        end = text.rfind("}", 0, end)
+
+    return None
 
 
 def extract_medical_entities(medical_note: str) -> dict:
