@@ -1,0 +1,46 @@
+# MedMatch Model A — never commit caches, data exports, weights, logs, or secrets.
+
+# Hugging Face / model caches
+.cache/
+hf_cache/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+
+# Credentials / tokens — never commit
+*.token
+.hf_token
+hf_token*
+*oauth*
+*.pem
+.env
+.env.*
+!.env.example
+
+# Data exports / prepared datasets
+data/
+*.jsonl
+*.parquet
+!tests/fixtures/*.jsonl
+
+# Training outputs
+outputs/
+checkpoints/
+runs/
+logs/
+*.log
+adapter/
+metrics/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
