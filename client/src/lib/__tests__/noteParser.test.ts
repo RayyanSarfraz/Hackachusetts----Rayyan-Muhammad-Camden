@@ -39,7 +39,28 @@ describe('noteParser', () => {
 
   it('extracts an explicit EGFR positive result as a biomarker', () => {
     const profile = parseNotes('NSCLC. EGFR mutation detected (positive).')
-    expect(profile.facts.biomarkers.value).toBe('EGFR positive')
+    expect(profile.facts.biomarkers.value).toEqual(['EGFR positive'])
+  })
+
+  it('captures multiple biomarkers, not just the first', () => {
+    const profile = parseNotes(
+      'EGFR activating mutation detected. KRAS wild-type (negative).',
+    )
+    expect(profile.facts.biomarkers.value).toEqual([
+      'EGFR positive',
+      'KRAS negative',
+    ])
+  })
+
+  it('merges medications from multiple labeled lines', () => {
+    const profile = parseNotes(
+      'Medication: Metformin\nMedication: Lisinopril\nMedication: Aspirin',
+    )
+    expect(profile.facts.medications.value).toEqual([
+      'Metformin',
+      'Lisinopril',
+      'Aspirin',
+    ])
   })
 
   it('treats "EGFR not documented" as Unknown, not negative', () => {

@@ -27,6 +27,9 @@ export function PatientIntake() {
   const [dragging, setDragging] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  // Track drag enter/leave depth so crossing onto child elements doesn't flicker
+  // or prematurely clear the drag highlight.
+  const dragDepth = useRef(0)
 
   const activeDoc = useMemo(
     () => state.documents.find((d) => d.id === state.activeDocId) ?? null,
@@ -186,9 +189,22 @@ export function PatientIntake() {
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault()
+    dragDepth.current = 0
     setDragging(false)
     const files = Array.from(e.dataTransfer.files ?? [])
     void handleFiles(files)
+  }
+
+  function onDragEnter(e: React.DragEvent) {
+    e.preventDefault()
+    dragDepth.current += 1
+    setDragging(true)
+  }
+
+  function onDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    dragDepth.current = Math.max(0, dragDepth.current - 1)
+    if (dragDepth.current === 0) setDragging(false)
   }
 
   return (
@@ -207,25 +223,15 @@ export function PatientIntake() {
         </p>
       </div>
 
-      {/* Unified drop zone */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
+      {/* Unified drop zone — a real <label> so the native file picker and its
+          accept/multiple semantics are announced by assistive tech, and the
+          hidden input handles both click and keyboard activation natively. */}
+      <label
+        onDragOver={(e) => e.preventDefault()}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
         onDrop={onDrop}
-        onClick={() => fileInputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            fileInputRef.current?.click()
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label="Upload records. Drag and drop files here, or activate to browse."
-        className={`focus-ring flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition ${
+        className={`focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition ${
           dragging
             ? 'border-teal bg-teal/5'
             : 'border-slate-300 bg-slate-50/60 hover:border-slate-400'
@@ -246,21 +252,22 @@ export function PatientIntake() {
             <path d="M5 16v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
           </svg>
         </span>
-        <p className="mt-3 text-sm font-semibold text-navy">
+        <span className="mt-3 text-sm font-semibold text-navy">
           Drag &amp; drop files here, or click to browse
-        </p>
-        <p className="mt-1 text-xs text-slate-500">
+        </span>
+        <span className="mt-1 text-xs text-slate-500">
           You can add several files at once
-        </p>
+        </span>
         <input
           ref={fileInputRef}
           type="file"
           accept={ACCEPT}
           multiple
           onChange={onInputChange}
+          aria-label="Upload records (PDF, TXT, CSV, JSON, or XML). Multiple files allowed."
           className="sr-only"
         />
-      </div>
+      </label>
 
       {/* Supported format chips */}
       <div className="mt-3 flex flex-wrap items-center justify-center gap-2">

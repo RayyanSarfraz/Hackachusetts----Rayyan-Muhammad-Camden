@@ -33,8 +33,8 @@ const QUESTION_TEMPLATES: Partial<
   biomarkers: {
     text: 'Do your pathology or molecular reports document an EGFR result?',
     options: [
-      { id: 'egfr-pos', label: 'EGFR positive', value: 'EGFR positive', isUnknown: false },
-      { id: 'egfr-neg', label: 'EGFR negative', value: 'EGFR negative', isUnknown: false },
+      { id: 'egfr-pos', label: 'EGFR positive', value: ['EGFR positive'], isUnknown: false },
+      { id: 'egfr-neg', label: 'EGFR negative', value: ['EGFR negative'], isUnknown: false },
       { id: 'egfr-unk', label: 'Unknown / not documented', value: null, isUnknown: true },
     ],
   },

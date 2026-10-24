@@ -100,15 +100,15 @@ function parseLocation(text: string): ParseResult {
 }
 
 /**
- * Extract a list of current medications. Recognizes a "Medications:" /
- * "Current medications:" / "Meds:" line and splits it into individual drugs.
+ * Extract a list of current medications. Recognizes every "Medications:" /
+ * "Current medications:" / "Meds:" / "Medication:" line (normalized FHIR/CSV
+ * output emits one per drug) and merges their items into a de-duplicated list.
  */
 function parseMedications(text: string): ParseResult {
-  const m = text.match(/\b(?:current medications?|medications?|meds)[:\s]+([^\n]+)/i)
-  if (!m) return null
-  const list = splitList(m[1])
-  if (list.length === 0) return null
-  return { value: list, evidence: m[0].trim() }
+  return collectLabeledList(
+    text,
+    /\b(?:current medications?|medications?|meds)[:\s]+([^\n]+)/gi,
+  )
 }
 
 /** Extract a list of allergies, or recognize an explicit "no known allergies". */
@@ -117,11 +117,24 @@ function parseAllergies(text: string): ParseResult {
     const m = text.match(/\b(?:no known (?:drug )?allergies|NKDA|NKA)\b/i)
     return { value: ['No known allergies'], evidence: m ? m[0].trim() : 'NKDA' }
   }
-  const m = text.match(/\ballergies?[:\s]+([^\n]+)/i)
-  if (!m) return null
-  const list = splitList(m[1])
-  if (list.length === 0) return null
-  return { value: list, evidence: m[0].trim() }
+  return collectLabeledList(text, /\ballergies?[:\s]+([^\n]+)/gi)
+}
+
+/**
+ * Collect the items from every line matching a global labeled-list pattern,
+ * merging and de-duplicating them. Returns null if nothing is found.
+ */
+function collectLabeledList(text: string, re: RegExp): ParseResult {
+  const items: string[] = []
+  let firstEvidence = ''
+  for (const m of text.matchAll(re)) {
+    if (!firstEvidence) firstEvidence = m[0].trim()
+    for (const item of splitList(m[1])) {
+      if (!items.some((x) => x.toLowerCase() === item.toLowerCase())) items.push(item)
+    }
+  }
+  if (items.length === 0) return null
+  return { value: items, evidence: firstEvidence }
 }
 
 /** Extract documented prior treatments / procedures. */
@@ -155,12 +168,16 @@ function parsePriorTreatments(text: string): ParseResult {
 }
 
 /**
- * Extract biomarker / genetic marker status. Generalizes the previous
- * EGFR-only logic: recognizes a named biomarker with a positive/negative-style
- * result. Conservative — "not documented" stays Unknown.
+ * Extract biomarker / genetic marker status as a list. Generalizes the previous
+ * EGFR-only logic: recognizes every named biomarker with a positive/negative-
+ * style result. Conservative — a marker explicitly "not documented" stays
+ * Unknown (it is omitted from the list rather than guessed).
  */
 function parseBiomarkers(text: string): ParseResult {
   const markers = ['EGFR', 'ALK', 'ROS1', 'KRAS', 'BRAF', 'HER2', 'PD-L1', 'BRCA', 'MSI']
+  const found: string[] = []
+  let firstEvidence = ''
+
   for (const marker of markers) {
     const undoc = new RegExp(
       `${marker}[^.\\n]*\\b(not documented|unknown|pending|not available|no result)\\b`,
@@ -176,11 +193,20 @@ function parseBiomarkers(text: string): ParseResult {
       'i',
     )
     const pm = text.match(pos)
-    if (pm) return { value: `${marker} positive`, evidence: pm[0].trim() }
+    if (pm) {
+      found.push(`${marker} positive`)
+      if (!firstEvidence) firstEvidence = pm[0].trim()
+      continue
+    }
     const nm = text.match(neg)
-    if (nm) return { value: `${marker} negative`, evidence: nm[0].trim() }
+    if (nm) {
+      found.push(`${marker} negative`)
+      if (!firstEvidence) firstEvidence = nm[0].trim()
+    }
   }
-  return null
+
+  if (found.length === 0) return null
+  return { value: found, evidence: firstEvidence }
 }
 
 /** Extract a documented disease stage only when clearly stated. */

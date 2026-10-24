@@ -85,6 +85,7 @@ export const LIST_FACT_KEYS: FactKey[] = [
   'medications',
   'allergies',
   'priorTreatments',
+  'biomarkers',
 ]
 
 /** Fact keys edited/stored as numbers. */

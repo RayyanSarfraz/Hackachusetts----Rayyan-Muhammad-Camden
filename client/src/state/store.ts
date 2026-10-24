@@ -80,13 +80,14 @@ export type Action =
 
 /**
  * Combine the text of every included document into a single notes string for
- * analysis. Documents are concatenated in tray order, separated by a labeled
- * divider so the deterministic parser sees each source clearly.
+ * analysis. Documents are concatenated in tray order, each preceded by a
+ * labeled divider naming its source so the deterministic parser (and, later,
+ * the hosted model) can tell the sources apart.
  */
 export function combinedNotes(documents: IntakeDocument[]): string {
   return documents
     .filter((d) => d.included && d.text.trim().length > 0)
-    .map((d) => d.text.trim())
+    .map((d) => `--- Source: ${d.name} ---\n${d.text.trim()}`)
     .join('\n\n')
 }
 

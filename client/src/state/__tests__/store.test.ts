@@ -7,7 +7,7 @@ import type { QuestionAnswer } from '../../types/domain'
 
 function answer(
   factKey: QuestionAnswer['factKey'],
-  value: string | number | null,
+  value: string | number | string[] | null,
   isUnknown: boolean,
 ): QuestionAnswer {
   return { factKey, optionId: 'x', value, isUnknown, answeredAt: Date.now() }
@@ -25,8 +25,8 @@ describe('store reducer', () => {
   it('answering EGFR positive recalculates dependent assessments (before/after)', () => {
     let state = createInitialState(DEMO_TRIALS)
     state = reducer(state, { type: 'SET_PROFILE', profile: parseNotes(SAMPLE_NOTES) })
-    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', 'EGFR positive', false) })
-    expect(state.profile.facts.biomarkers.value).toBe('EGFR positive')
+    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', ['EGFR positive'], false) })
+    expect(state.profile.facts.biomarkers.value).toEqual(['EGFR positive'])
     // Changes recorded for A, B, C biomarker criteria; D unaffected.
     const changedTrials = new Set(state.lastChanges.map((c) => c.trialId))
     expect(changedTrials.has('DEMO-A')).toBe(true)
@@ -48,9 +48,9 @@ describe('store reducer', () => {
   it('revising a previous answer recalculates dependent assessments', () => {
     let state = createInitialState(DEMO_TRIALS)
     state = reducer(state, { type: 'SET_PROFILE', profile: parseNotes(SAMPLE_NOTES) })
-    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', 'EGFR positive', false) })
-    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', 'EGFR negative', false) })
-    expect(state.profile.facts.biomarkers.value).toBe('EGFR negative')
+    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', ['EGFR positive'], false) })
+    state = reducer(state, { type: 'ANSWER_QUESTION', answer: answer('biomarkers', ['EGFR negative'], false) })
+    expect(state.profile.facts.biomarkers.value).toEqual(['EGFR negative'])
     // Only one answer retained for biomarkers (replaced, not appended).
     expect(state.answers.filter((a) => a.factKey === 'biomarkers')).toHaveLength(1)
   })

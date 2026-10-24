@@ -79,6 +79,15 @@ export function assessCriterion(
       return assessStage(criterion, trial, profile)
     case 'performance':
       return assessPerformance(criterion, trial, profile)
+    case 'sex':
+    case 'location':
+    case 'medications':
+    case 'allergies':
+    case 'treatment':
+      // These fact kinds have no assessment rule yet. They are deliberately
+      // reported as not-yet-assessable (Unknown) rather than guessed. If a
+      // trial starts using one of these kinds, add an explicit assessor above.
+      return unknownAssessment(criterion, trial)
     default:
       return unknownAssessment(criterion, trial)
   }
@@ -135,26 +144,44 @@ function assessBiomarker(
   const { value, known, evidence } = getFact(profile, 'biomarkers')
   if (!known) return unknownAssessment(criterion, trial)
 
-  // Value is a label like "EGFR positive" / "EGFR negative".
-  const v = String(value).toLowerCase()
-  const requiresPositive = /egfr positive|activating mutation/i.test(criterion.text)
-  const requiresNegative = /egfr negative|wild[\s-]?type/i.test(criterion.text)
-  const isPositive = /\bpositive\b/.test(v)
-  const isNegative = /\bnegative\b/.test(v)
+  // Determine which marker + polarity the criterion requires. Today the demo
+  // criteria concern EGFR; parse the marker so identity is cross-checked and
+  // a different marker (e.g. KRAS) can't satisfy an EGFR requirement.
+  const requiresPositive = /egfr[^.]*positive|egfr[^.]*activating mutation|activating mutation/i.test(
+    criterion.text,
+  )
+  const requiresNegative = /egfr[^.]*negative|egfr[^.]*wild[\s-]?type|wild[\s-]?type/i.test(
+    criterion.text,
+  )
 
-  let supported = false
-  if (requiresPositive) supported = isPositive
-  else if (requiresNegative) supported = isNegative
+  // If the criterion isn't one this rule understands, the fact exists but
+  // can't be judged here — report Unknown rather than a false conflict.
+  if (!requiresPositive && !requiresNegative) {
+    return unknownAssessment(criterion, trial)
+  }
+
+  // The patient's biomarkers are a list of "<MARKER> positive/negative" labels.
+  const markers = (Array.isArray(value) ? value : [String(value)]).map((s) =>
+    s.toLowerCase(),
+  )
+  const egfrEntry = markers.find((m) => m.startsWith('egfr'))
+
+  // We only have an EGFR requirement but no EGFR result documented → Unknown.
+  if (!egfrEntry) return unknownAssessment(criterion, trial)
+
+  const isPositive = /\bpositive\b/.test(egfrEntry)
+  const supported = requiresPositive ? isPositive : !isPositive
+  const resultLabel = isPositive ? 'EGFR positive' : 'EGFR negative'
 
   return {
     criterionId: criterion.id,
     trialId: trial.id,
     status: supported ? 'supported' : 'potential_conflict',
     factUsed: 'biomarkers',
-    patientEvidence: evidence ?? String(value),
+    patientEvidence: evidence ?? resultLabel,
     explanation: supported
-      ? `Documented ${value} satisfies this criterion.`
-      : `Documented ${value} appears to conflict with this criterion.`,
+      ? `Documented ${resultLabel} satisfies this criterion.`
+      : `Documented ${resultLabel} appears to conflict with this criterion.`,
   }
 }
 
@@ -170,6 +197,12 @@ function assessStage(
 
   const requiresStageIV = /stage iv/i.test(criterion.text)
   const allowsStageIII = /stage iii/i.test(criterion.text)
+
+  // If the criterion names no stage this rule understands, the known stage
+  // can't be judged against it — report Unknown rather than a false conflict.
+  if (!requiresStageIV && !allowsStageIII) {
+    return unknownAssessment(criterion, trial)
+  }
 
   let supported = false
   if (allowsStageIII && requiresStageIV) {

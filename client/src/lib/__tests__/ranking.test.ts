@@ -18,7 +18,7 @@ describe('ranking', () => {
       ...base,
       facts: {
         ...base.facts,
-        biomarkers: { ...base.facts.biomarkers, value: 'EGFR positive', known: true, source: 'answered' },
+        biomarkers: { ...base.facts.biomarkers, value: ['EGFR positive'], known: true, source: 'answered' },
       },
     }
     const rankedAny = rankTrials(DEMO_TRIALS, profile, { travel: any })

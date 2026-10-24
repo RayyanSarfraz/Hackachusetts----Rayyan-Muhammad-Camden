@@ -39,7 +39,7 @@ export function DocumentTray({
   }
 
   return (
-    <ul role="tablist" aria-label="Uploaded documents" className="space-y-2">
+    <ul aria-label="Uploaded documents" className="space-y-2">
       {documents.map((doc) => {
         const active = doc.id === activeId
         const meta = KIND_META[doc.kind]
@@ -61,8 +61,8 @@ export function DocumentTray({
               />
               <button
                 type="button"
-                role="tab"
-                aria-selected={active}
+                aria-pressed={active}
+                aria-label={`Preview ${doc.name}`}
                 onClick={() => onSelect(doc.id)}
                 className="focus-ring flex min-w-0 flex-1 items-center gap-2 text-left"
               >

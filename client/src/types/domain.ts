@@ -104,9 +104,6 @@ export interface IntakeDocument {
   pdfBytes?: ArrayBuffer
 }
 
-/** EGFR mutation status values the demo supports. */
-export type EgfrStatus = 'positive' | 'negative'
-
 /** How a criterion is categorized in the trial record. */
 export type CriterionCategory = 'inclusion' | 'exclusion'
 
@@ -190,9 +187,10 @@ export interface QuestionOption {
   label: string
   /**
    * The resolved value this option maps to, or `null` for the
-   * "Unknown / not documented" option.
+   * "Unknown / not documented" option. List facts (e.g. biomarkers) use an
+   * array.
    */
-  value: string | number | null
+  value: string | number | string[] | null
   /** True for the explicit Unknown / not documented option. */
   isUnknown: boolean
 }
@@ -218,7 +216,7 @@ export interface QuestionAnswer {
   factKey: FactKey
   /** The option id that was chosen. */
   optionId: string
-  value: string | number | null
+  value: string | number | string[] | null
   isUnknown: boolean
   /** When the user answered (epoch ms) — used for ordering history. */
   answeredAt: number

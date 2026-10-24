@@ -8,7 +8,7 @@ import type { FactKey, PatientProfile } from '../../types/domain'
 function setFact(
   profile: PatientProfile,
   key: FactKey,
-  value: string | number | null,
+  value: string | number | string[] | null,
 ): PatientProfile {
   return {
     ...profile,
@@ -63,7 +63,7 @@ describe('questionEngine', () => {
 
   it('answering a fact removes it from future candidates (no repeat)', () => {
     let profile = parseNotes(SAMPLE_NOTES)
-    profile = setFact(profile, 'biomarkers', 'EGFR positive')
+    profile = setFact(profile, 'biomarkers', ['EGFR positive'])
     const { candidates } = buildQuestions(DEMO_TRIALS, profile)
     expect(candidates.some((c) => c.factKey === 'biomarkers')).toBe(false)
   })
@@ -83,7 +83,7 @@ describe('questionEngine', () => {
 
   it('returns no question when all relevant facts are resolved', () => {
     let profile = parseNotes(SAMPLE_NOTES)
-    profile = setFact(profile, 'biomarkers', 'EGFR positive')
+    profile = setFact(profile, 'biomarkers', ['EGFR positive'])
     profile = setFact(profile, 'diseaseStage', 'Stage IV')
     profile = setFact(profile, 'performanceStatus', 1)
     const { next } = buildQuestions(DEMO_TRIALS, profile)

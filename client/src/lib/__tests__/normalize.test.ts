@@ -11,7 +11,7 @@ describe('normalize smoke', () => {
     expect(text).toContain('eGFR')
     // Biomarker extraction should see the EGFR positive row.
     const profile = parseNotes(text)
-    expect(profile.facts.biomarkers.value).toBe('EGFR positive')
+    expect(profile.facts.biomarkers.value).toEqual(['EGFR positive'])
   })
 
   it('FHIR JSON bundle → text and extracts patient facts', () => {
