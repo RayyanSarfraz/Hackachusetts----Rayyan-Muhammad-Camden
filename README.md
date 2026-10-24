@@ -46,7 +46,7 @@ python manage.py runserver
 
 | Part | Command | Count |
 |---|---|---|
-| Backend | `cd api && python manage.py test apps` | 68 |
+| Backend | `cd api && python manage.py test apps` | 77 |
 | ML (Model A, no GPU) | `cd ml/model_a && python -m unittest discover -s tests -t .` (needs `pyyaml`) | 30 |
 | Frontend | `cd client && npm test && npm run typecheck && npm run lint && npm run build` | 32 |
 | Backend-frontend parity | start the API, then `cd client && RUN_PARITY=1 npx vitest run src/api/__tests__/parity.test.ts --environment node` | 2 |

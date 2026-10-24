@@ -52,6 +52,11 @@ class TrialRetriever:
     def available(self) -> bool:
         return self._load_collection() is not None
 
+    def document_count(self) -> int:
+        """Number of indexed documents; 0 when the collection is unavailable."""
+        collection = self._load_collection()
+        return collection.count() if collection is not None else 0
+
     def get_or_create_collection(self):
         """
         Open (or create) the persistent collection for ingestion.
