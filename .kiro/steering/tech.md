@@ -35,6 +35,10 @@ list when they disagree, then update this file.
   `config.settings.development` or `config.settings.production`.
 - Required keys live in `api/.env.example`. Never read, echo, or commit values
   from `api/.env`; reference keys by name.
+- `api/.env` is the single source for `MODEL_*` / `CHROMA_COLLECTION` on host
+  runs and in Docker (it is bind-mounted into the api container). Don't add
+  those keys to `compose.yaml` `environment:`: compose values, even empty ones,
+  shadow `api/.env`. The root `.env` only feeds compose (Postgres, Django).
 
 ## Common commands (run from `api/`)
 
@@ -63,10 +67,11 @@ Host Postgres: drop/recreate the DB, then `migrate` and `ingest_trials`.
 
 ## Gotchas
 
-- `python manage.py makemigrations` HANGS in this project's shell (produces no
-  output, never returns). Generate migrations with Django's `MigrationWriter`
-  directly (a short throwaway script that calls the autodetector + writer) or
-  run it inside Docker. `migrate` itself works fine.
+- `python manage.py makemigrations` that "hangs" with no output is waiting on
+  an interactive question (rename / default-value prompts) the agent shell
+  can't display. Run it in an interactive terminal, or use `--noinput` to get
+  the error instead of a hang. Don't hand-write migrations with
+  `MigrationWriter`: that skips those questions.
 - Running `manage.py` on the host needs a reachable Postgres; for DB-free unit
   tests use `$env:DATABASE_URL="sqlite://:memory:"`.
 - Trial ingestion downloads the ChromaDB default embedder (`all-MiniLM-L6-v2`,

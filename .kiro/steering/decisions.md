@@ -45,7 +45,9 @@ Status: active.
 
 ## 2026-10-24 — Dev-only auto-seed of trial data
 Decision: `api/entrypoint.sh` auto-runs `ingest_trials` ONLY when settings are
-development, the CSV exists, and the `Trial` table is empty. Production never
+development, the CSV exists, and data is missing: the `Trial` table is empty or
+ChromaDB holds fewer documents than `Trial` rows (so a seed that loaded Postgres
+but failed to index vectors is retried on the next start). Production never
 auto-seeds — trial data there is loaded deliberately.
 Why: zero-friction `docker compose up` for the team in dev; keep data loading an
 explicit, observable step in prod.

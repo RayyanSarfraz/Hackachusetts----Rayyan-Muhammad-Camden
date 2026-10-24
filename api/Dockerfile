@@ -22,9 +22,13 @@ COPY . .
 
 RUN chmod +x /app/entrypoint.sh
 
-# Run as a non-root user.
+# Run as a non-root user. /data/chroma is pre-created so the chroma_data named
+# volume mounted there inherits appuser ownership (Docker creates missing mount
+# points as root, which appuser cannot write).
 RUN useradd --create-home --uid 1000 appuser \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app \
+    && mkdir -p /data/chroma \
+    && chown appuser:appuser /data/chroma
 USER appuser
 
 ENTRYPOINT ["/app/entrypoint.sh"]
