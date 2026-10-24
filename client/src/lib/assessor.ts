@@ -1,6 +1,7 @@
 import type {
   CriterionAssessment,
   EligibilityCriterion,
+  FactKey,
   PatientProfile,
   Trial,
   TrialAssessmentSummary,
@@ -43,6 +44,27 @@ function unknownAssessment(
     status: 'unknown',
     explanation: `The patient's ${labelFor(factKey)} is not documented, so this criterion cannot be assessed yet.`,
     factUsed: factKey,
+  }
+}
+
+/** Build an assessment from a structured rule check (met -> supported). */
+function ruleResult(
+  criterion: EligibilityCriterion,
+  trial: Trial,
+  factUsed: FactKey,
+  met: boolean,
+  evidence: string,
+  what: string,
+): CriterionAssessment {
+  return {
+    criterionId: criterion.id,
+    trialId: trial.id,
+    factUsed,
+    status: met ? 'supported' : 'potential_conflict',
+    patientEvidence: evidence,
+    explanation: met
+      ? `${what} satisfies this criterion.`
+      : `${what} appears to conflict with this criterion.`,
   }
 }
 
@@ -108,6 +130,19 @@ function assessAge(
 ): CriterionAssessment {
   const { value, known, evidence } = getFact(profile, 'age')
   if (!known) return unknownAssessment(criterion, trial)
+  const rule = criterion.rule
+  if (rule && ('minAge' in rule || 'maxAge' in rule)) {
+    const { minAge = -Infinity, maxAge = Infinity } = rule
+    const ruleAge = Number(value)
+    return ruleResult(
+      criterion,
+      trial,
+      'age',
+      ruleAge >= minAge && ruleAge <= maxAge,
+      evidence ?? String(value),
+      `Patient age ${ruleAge}`,
+    )
+  }
   const age = Number(value)
   const inRange = age >= 18 && age <= 75
   return {
@@ -129,6 +164,17 @@ function assessEgfr(
 ): CriterionAssessment {
   const { value, known, evidence } = getFact(profile, 'egfrStatus')
   if (!known) return unknownAssessment(criterion, trial)
+  const rule = criterion.rule
+  if (rule && 'egfr' in rule) {
+    return ruleResult(
+      criterion,
+      trial,
+      'egfrStatus',
+      String(value) === rule.egfr,
+      evidence ?? `EGFR ${String(value)}`,
+      `Documented EGFR ${String(value)} result`,
+    )
+  }
 
   const requiresPositive = /egfr positive|activating mutation/i.test(criterion.text)
   const requiresNegative = /egfr negative|wild[\s-]?type/i.test(criterion.text)
@@ -157,6 +203,18 @@ function assessStage(
 ): CriterionAssessment {
   const { value, known, evidence } = getFact(profile, 'cancerStage')
   if (!known) return unknownAssessment(criterion, trial)
+  const rule = criterion.rule
+  if (rule && 'stages' in rule) {
+    const ruleStage = String(value).toUpperCase()
+    return ruleResult(
+      criterion,
+      trial,
+      'cancerStage',
+      rule.stages.includes(ruleStage),
+      evidence ?? `Stage ${ruleStage}`,
+      `Documented Stage ${ruleStage}`,
+    )
+  }
   const stage = String(value).toUpperCase()
 
   // Extract accepted stages from the criterion text.
@@ -191,6 +249,18 @@ function assessEcog(
 ): CriterionAssessment {
   const { value, known, evidence } = getFact(profile, 'ecogStatus')
   if (!known) return unknownAssessment(criterion, trial)
+  const rule = criterion.rule
+  if (rule && 'ecogMax' in rule) {
+    const ruleEcog = Number(value)
+    return ruleResult(
+      criterion,
+      trial,
+      'ecogStatus',
+      ruleEcog <= rule.ecogMax,
+      evidence ?? `ECOG ${ruleEcog}`,
+      `Documented ECOG ${ruleEcog}`,
+    )
+  }
   const ecog = Number(value)
 
   // Parse the accepted ECOG range, e.g. "0 to 1" or "0 to 2".

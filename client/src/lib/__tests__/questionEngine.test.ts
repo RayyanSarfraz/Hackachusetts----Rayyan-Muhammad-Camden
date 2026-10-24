@@ -3,6 +3,8 @@ import { buildQuestions } from '../questionEngine'
 import { parseNotes } from '../noteParser'
 import { DEMO_PATIENT_NOTES } from '../../data/demoPatient'
 import { DEMO_TRIALS } from '../../data/trials'
+import { NSCLC_TRIALS } from '../../data/nsclcTrials'
+import { assessTrials } from '../assessor'
 import type { FactKey, PatientProfile } from '../../types/domain'
 
 function setFact(
@@ -88,5 +90,34 @@ describe('questionEngine', () => {
     profile = setFact(profile, 'ecogStatus', 1)
     const { next } = buildQuestions(DEMO_TRIALS, profile)
     expect(next).toBeNull()
+  })
+})
+
+describe('questionEngine with NSCLC_TRIALS', () => {
+  it('asks EGFR status first for the demo patient', () => {
+    const { next, candidates } = buildQuestions(
+      NSCLC_TRIALS,
+      parseNotes(DEMO_PATIENT_NOTES),
+    )
+    expect(next?.factKey).toBe('egfrStatus')
+    const keys = candidates.map((c) => c.factKey)
+    expect(keys).toContain('cancerStage')
+    expect(keys).toContain('ecogStatus')
+  })
+
+  it('answering EGFR positive supports the EGFR+ trials and conflicts the EGFR- trials', () => {
+    const profile = setFact(parseNotes(DEMO_PATIENT_NOTES), 'egfrStatus', 'positive')
+    const egfrStatusById = new Map(
+      assessTrials(NSCLC_TRIALS, profile).map((s) => [
+        s.trialId,
+        s.assessments.find((a) => a.criterionId === `${s.trialId}-egfr`)?.status,
+      ]),
+    )
+    for (const id of ['NCT04410796', 'NCT04181060', 'NCT03191149']) {
+      expect(egfrStatusById.get(id)).toBe('supported')
+    }
+    for (const id of ['NCT07291037', 'NCT06767514', 'NCT07063745']) {
+      expect(egfrStatusById.get(id)).toBe('potential_conflict')
+    }
   })
 })

@@ -2,10 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import App from '../App'
 import { AppProvider } from '../state/AppContext'
+import { DEMO_TRIALS } from '../data/trials'
 
 function renderApp() {
   return render(
-    <AppProvider>
+    <AppProvider initialTrials={DEMO_TRIALS}>
       <App />
     </AppProvider>,
   )
