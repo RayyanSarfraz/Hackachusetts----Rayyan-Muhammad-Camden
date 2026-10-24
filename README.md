@@ -30,7 +30,6 @@ exercises the full user-facing flow end to end.
 
 ### Option 2 — Full stack in one command (Docker)
 
-Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Compose v2).
 One command builds and starts Postgres, the Django API and the Vite client:
 
 ```bash
@@ -39,7 +38,33 @@ docker compose up --build      # Postgres + Django API (:8000) + Vite client (:5
 
 Then open http://localhost:5173 for the client and http://localhost:8000/api/health/
 for the API health check. No `.env` file is required — the compose file provides safe
-local defaults. Press `Ctrl+C` to stop.
+local defaults. The API container waits for Postgres, runs migrations and seeds the
+demo trial data automatically, so there are no manual steps. Press `Ctrl+C` to stop.
+
+#### Don't have Docker? Install it first
+
+Docker Desktop bundles both Docker Engine and Compose v2 (the `docker compose` command).
+
+- **macOS** — download [Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
+  (pick the Apple Silicon or Intel build), open the `.dmg`, drag Docker to Applications,
+  then launch it. Or with [Homebrew](https://brew.sh): `brew install --cask docker` and
+  open Docker Desktop once to finish setup.
+- **Windows** — download [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+  and run the installer (it enables the WSL 2 backend for you). Reboot if prompted, then
+  launch Docker Desktop.
+- **Linux** — install [Docker Engine](https://docs.docker.com/engine/install/) and the
+  [Compose plugin](https://docs.docker.com/compose/install/linux/) for your distro, or
+  use [Docker Desktop for Linux](https://docs.docker.com/desktop/setup/install/linux/).
+
+Make sure Docker Desktop (or the daemon) is **running**, then verify the install:
+
+```bash
+docker --version
+docker compose version
+```
+
+Once both print a version, run the `docker compose up --build` command above from the
+repository root.
 
 To have the frontend call the backend for fact extraction, set `VITE_USE_HTTP_API=true`
 for the client (for example in `client/.env.local`). The trial list still comes from the
