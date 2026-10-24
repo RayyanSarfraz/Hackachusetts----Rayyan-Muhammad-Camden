@@ -77,10 +77,10 @@ function buildRankExplanation(
   )
   if (!withinTravelPreference && travel.maxMiles !== null) {
     parts.push(
-      `Outside the "${travel.label}" preference (${trial.distance.miles} mi, mock distance), so it ranks lower but is still shown.`,
+      `Outside the "${travel.label}" preference (${trial.distance.miles} mi, ${trial.distance.label} distance), so it ranks lower but is still shown.`,
     )
   } else {
-    parts.push(`Within the "${travel.label}" preference (${trial.distance.miles} mi, mock distance).`)
+    parts.push(`Within the "${travel.label}" preference (${trial.distance.miles} mi, ${trial.distance.label} distance).`)
   }
   return parts.join(' ')
 }

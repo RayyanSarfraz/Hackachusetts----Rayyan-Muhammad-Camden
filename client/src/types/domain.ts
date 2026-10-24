@@ -58,6 +58,17 @@ export type EgfrStatus = 'positive' | 'negative'
 export type CriterionCategory = 'inclusion' | 'exclusion'
 
 /**
+ * Optional structured rule for a criterion. When present, the assessor uses
+ * these thresholds instead of the hardcoded demo values.
+ */
+export type CriterionRule =
+  | { minAge?: number; maxAge?: number }
+  | { egfr: 'positive' | 'negative' }
+  /** Allowed stages, upper-case Roman numerals, e.g. ['III', 'IV']. */
+  | { stages: string[] }
+  | { ecogMax: number }
+
+/**
  * A single eligibility criterion from a (fictional) trial record.
  * `dependsOn` lists which patient facts are needed to assess it.
  */
@@ -82,13 +93,15 @@ export interface EligibilityCriterion {
     | 'ecog'
     | 'location'
     | 'treatment'
+  /** Structured thresholds for this criterion, if any. */
+  rule?: CriterionRule
 }
 
 export interface TrialDistance {
   /** Explicitly labeled mock distance in miles (not computed from geo). */
   miles: number
-  /** Whether this number is a verified value or a labeled mock estimate. */
-  label: 'mock'
+  /** 'mock' for demo trials, 'approximate' for real trials (rough estimate). */
+  label: 'mock' | 'approximate'
 }
 
 export interface Trial {
@@ -100,7 +113,15 @@ export interface Trial {
   distance: TrialDistance
   criteria: EligibilityCriterion[]
   /** Source label for evidence provenance. */
-  sourceLabel: 'Demo criterion'
+  sourceLabel: 'Demo criterion' | 'ClinicalTrials.gov'
+  /** ClinicalTrials.gov identifier for real trials (equals `id`). */
+  nctId?: string
+  /** https://clinicaltrials.gov/study/<nctId> */
+  sourceUrl?: string
+  /** Recruitment status from the dataset, e.g. "RECRUITING". */
+  recruitmentStatus?: string
+  /** Trial phase from the dataset. */
+  phase?: string
 }
 
 /** The three possible assessments for an individual criterion. */

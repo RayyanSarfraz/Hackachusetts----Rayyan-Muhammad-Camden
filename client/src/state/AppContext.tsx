@@ -5,8 +5,13 @@ import {
   useReducer,
   type ReactNode,
 } from 'react'
-import type { FactKey, MissingInformationQuestion, RankedTrial } from '../types/domain'
-import { DEMO_TRIALS } from '../data/trials'
+import type {
+  FactKey,
+  MissingInformationQuestion,
+  RankedTrial,
+  Trial,
+} from '../types/domain'
+import { NSCLC_TRIALS } from '../data/nsclcTrials'
 import { rankTrials } from '../lib/ranking'
 import { buildQuestions } from '../lib/questionEngine'
 import {
@@ -29,10 +34,16 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | null>(null)
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({
+  children,
+  initialTrials = NSCLC_TRIALS,
+}: {
+  children: ReactNode
+  initialTrials?: Trial[]
+}) {
   const [state, dispatch] = useReducer(
     reducer,
-    DEMO_TRIALS,
+    initialTrials,
     createInitialState,
   )
 
