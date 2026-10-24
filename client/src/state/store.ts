@@ -1,6 +1,7 @@
 import type {
   AssessmentChange,
   FactKey,
+  IntakeDocument,
   PatientFact,
   PatientProfile,
   QuestionAnswer,
@@ -28,6 +29,10 @@ export interface AppState {
   profile: PatientProfile
   /** Draft notes in the textarea before analysis. */
   draftNotes: string
+  /** Source documents in the intake tray (pasted / .txt / .pdf). */
+  documents: IntakeDocument[]
+  /** The document currently shown in the preview pane. */
+  activeDocId: string | null
   /** True once notes have been analyzed and facts extracted. */
   analyzed: boolean
   travel: TravelPreference
@@ -47,6 +52,8 @@ export function createInitialState(trials: Trial[]): AppState {
     trials,
     profile: emptyProfile(),
     draftNotes: '',
+    documents: [],
+    activeDocId: null,
     analyzed: false,
     travel: DEFAULT_TRAVEL_PREFERENCE,
     answers: [],
@@ -59,12 +66,29 @@ export function createInitialState(trials: Trial[]): AppState {
 export type Action =
   | { type: 'SET_DRAFT_NOTES'; notes: string }
   | { type: 'SET_PROFILE'; profile: PatientProfile }
-  | { type: 'CONFIRM_FACT'; key: FactKey; value: string | number | null }
+  | { type: 'CONFIRM_FACT'; key: FactKey; value: string | number | string[] | null }
   | { type: 'SET_STEP'; step: WorkflowStep }
   | { type: 'SET_TRAVEL'; travel: TravelPreference }
   | { type: 'ANSWER_QUESTION'; answer: QuestionAnswer }
   | { type: 'REVISE_FACT'; factKey: FactKey }
+  | { type: 'ADD_DOCUMENT'; document: IntakeDocument }
+  | { type: 'UPDATE_DOCUMENT'; id: string; patch: Partial<IntakeDocument> }
+  | { type: 'REMOVE_DOCUMENT'; id: string }
+  | { type: 'SELECT_DOCUMENT'; id: string }
+  | { type: 'TOGGLE_DOCUMENT_INCLUDED'; id: string }
   | { type: 'RESET' }
+
+/**
+ * Combine the text of every included document into a single notes string for
+ * analysis. Documents are concatenated in tray order, separated by a labeled
+ * divider so the deterministic parser sees each source clearly.
+ */
+export function combinedNotes(documents: IntakeDocument[]): string {
+  return documents
+    .filter((d) => d.included && d.text.trim().length > 0)
+    .map((d) => d.text.trim())
+    .join('\n\n')
+}
 
 function applyAnswerToProfile(
   profile: PatientProfile,
@@ -186,6 +210,45 @@ export function reducer(state: AppState, action: Action): AppState {
         lastChanges: changes,
         lastChangedFact: action.factKey,
       }
+    }
+
+    case 'ADD_DOCUMENT': {
+      const documents = [...state.documents, action.document]
+      return {
+        ...state,
+        documents,
+        // Newly added document becomes the active (previewed) one.
+        activeDocId: action.document.id,
+      }
+    }
+
+    case 'UPDATE_DOCUMENT': {
+      const documents = state.documents.map((d) =>
+        d.id === action.id ? { ...d, ...action.patch } : d,
+      )
+      return { ...state, documents }
+    }
+
+    case 'REMOVE_DOCUMENT': {
+      const documents = state.documents.filter((d) => d.id !== action.id)
+      // If the removed doc was active, fall back to the last remaining one.
+      const activeDocId =
+        state.activeDocId === action.id
+          ? documents.length > 0
+            ? documents[documents.length - 1].id
+            : null
+          : state.activeDocId
+      return { ...state, documents, activeDocId }
+    }
+
+    case 'SELECT_DOCUMENT':
+      return { ...state, activeDocId: action.id }
+
+    case 'TOGGLE_DOCUMENT_INCLUDED': {
+      const documents = state.documents.map((d) =>
+        d.id === action.id ? { ...d, included: !d.included } : d,
+      )
+      return { ...state, documents }
     }
 
     case 'RESET':

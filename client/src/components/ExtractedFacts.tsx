@@ -1,5 +1,5 @@
 import { useApp } from '../state/AppContext'
-import { FACT_DEFINITIONS } from '../data/demoPatient'
+import { FACT_DEFINITIONS, LIST_FACT_KEYS, NUMBER_FACT_KEYS } from '../data/facts'
 import type { FactKey } from '../types/domain'
 
 export function ExtractedFacts() {
@@ -8,10 +8,16 @@ export function ExtractedFacts() {
 
   function edit(key: FactKey, raw: string) {
     const trimmed = raw.trim()
-    let value: string | number | null = trimmed === '' ? null : trimmed
-    if (key === 'age' || key === 'ecogStatus') {
+    let value: string | number | string[] | null = trimmed === '' ? null : trimmed
+    if (NUMBER_FACT_KEYS.includes(key)) {
       value = trimmed === '' ? null : Number(trimmed)
       if (value !== null && Number.isNaN(value)) value = null
+    } else if (LIST_FACT_KEYS.includes(key)) {
+      const list = trimmed
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      value = list.length > 0 ? list : null
     }
     dispatch({ type: 'CONFIRM_FACT', key, value })
   }
@@ -24,11 +30,12 @@ export function ExtractedFacts() {
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h2 id="facts-heading" className="text-xl font-bold text-navy">
-            Review extracted facts
+            Review your health information
           </h2>
           <p className="mt-1 text-sm text-slate-600">
-            Confirm or correct the facts before matching. Blank fields stay
-            Unknown — missing data is never treated as a negative finding.
+            Confirm or correct the information we found before matching. Blank
+            fields stay Unknown — missing data is never treated as a negative
+            finding. Separate list items (medications, allergies) with commas.
           </p>
         </div>
       </div>
@@ -41,7 +48,9 @@ export function ExtractedFacts() {
             <div
               key={def.key}
               className={`rounded-xl border p-3 ${
-                known ? 'border-slate-200 bg-slate-50' : 'border-dashed border-slate-300 bg-white'
+                known
+                  ? 'border-slate-200 bg-slate-50'
+                  : 'border-dashed border-slate-300 bg-white'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -61,12 +70,10 @@ export function ExtractedFacts() {
               </div>
               <input
                 id={`fact-${def.key}`}
-                defaultValue={
-                  fact.value === null ? '' : displayRaw(def.key, fact.value)
-                }
-                key={`${def.key}-${String(fact.value)}`}
+                defaultValue={displayRaw(def.key, fact.value)}
+                key={`${def.key}-${displayRaw(def.key, fact.value)}`}
                 onBlur={(e) => edit(def.key, e.target.value)}
-                placeholder="Unknown / not documented"
+                placeholder={def.hint}
                 className="focus-ring mt-2 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-navy placeholder:text-slate-400"
               />
               {fact.evidence && (
@@ -92,15 +99,16 @@ export function ExtractedFacts() {
           onClick={() => dispatch({ type: 'SET_STEP', step: 'intake' })}
           className="focus-ring inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-navy hover:bg-slate-50"
         >
-          ← Back to notes
+          ← Back to records
         </button>
       </div>
     </section>
   )
 }
 
-/** Show the editable raw value (not the pretty EGFR label) in the input. */
-function displayRaw(key: FactKey, value: unknown): string {
-  if (key === 'egfrStatus') return String(value)
+/** Render the editable raw value: lists become comma-joined, null becomes ''. */
+function displayRaw(_key: FactKey, value: unknown): string {
+  if (value === null || value === undefined) return ''
+  if (Array.isArray(value)) return value.join(', ')
   return String(value)
 }

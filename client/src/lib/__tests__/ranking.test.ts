@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { rankTrials } from '../ranking'
 import { assessTrials } from '../assessor'
 import { parseNotes } from '../noteParser'
-import { DEMO_PATIENT_NOTES } from '../../data/demoPatient'
+import { SAMPLE_NOTES } from './fixtures'
 import { DEMO_TRIALS, TRAVEL_PREFERENCES } from '../../data/trials'
 import type { PatientProfile } from '../../types/domain'
 
@@ -13,12 +13,12 @@ describe('ranking', () => {
   it('changing travel preference changes ordering', () => {
     // EGFR negative makes near Study B (6mi) supported while far Study C (48mi,
     // EGFR+) becomes a conflict, so travel preference reshuffles the order.
-    const base = parseNotes(DEMO_PATIENT_NOTES)
+    const base = parseNotes(SAMPLE_NOTES)
     const profile: PatientProfile = {
       ...base,
       facts: {
         ...base.facts,
-        egfrStatus: { ...base.facts.egfrStatus, value: 'positive', known: true, source: 'answered' },
+        biomarkers: { ...base.facts.biomarkers, value: 'EGFR positive', known: true, source: 'answered' },
       },
     }
     const rankedAny = rankTrials(DEMO_TRIALS, profile, { travel: any })
@@ -35,7 +35,7 @@ describe('ranking', () => {
   })
 
   it('does not change clinical assessments when travel changes', () => {
-    const profile = parseNotes(DEMO_PATIENT_NOTES)
+    const profile = parseNotes(SAMPLE_NOTES)
     const clinicalAny = assessTrials(DEMO_TRIALS, profile)
     const rankedNearby = rankTrials(DEMO_TRIALS, profile, { travel: nearby })
     for (const r of rankedNearby) {
@@ -47,7 +47,7 @@ describe('ranking', () => {
   })
 
   it('keeps clinically relevant trials even when outside travel preference', () => {
-    const profile = parseNotes(DEMO_PATIENT_NOTES)
+    const profile = parseNotes(SAMPLE_NOTES)
     const ranked = rankTrials(DEMO_TRIALS, profile, { travel: nearby })
     // All four trials are still present, none silently removed.
     expect(ranked).toHaveLength(4)
@@ -56,7 +56,7 @@ describe('ranking', () => {
   })
 
   it('Unknown criteria never count as supported in the score', () => {
-    const profile = parseNotes(DEMO_PATIENT_NOTES)
+    const profile = parseNotes(SAMPLE_NOTES)
     const ranked = rankTrials(DEMO_TRIALS, profile, { travel: any })
     const a = ranked.find((r) => r.trial.id === 'DEMO-A')!
     // 2 supported * 2 - 0 conflicts * 3 = 4 ; unknowns contribute nothing.

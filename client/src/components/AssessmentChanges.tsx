@@ -1,6 +1,6 @@
 import { useApp } from '../state/AppContext'
 import { StatusBadge } from './ui/StatusBadge'
-import { FACT_DEFINITIONS } from '../data/demoPatient'
+import { FACT_DEFINITIONS } from '../data/facts'
 import type { QuestionAnswer } from '../types/domain'
 
 export function AssessmentChanges() {
