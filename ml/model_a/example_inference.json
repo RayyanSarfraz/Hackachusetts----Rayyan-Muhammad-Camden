@@ -1,0 +1,20 @@
+{
+  "_label": "EXAMPLE SCHEMA ONLY — this is the output contract, NOT a real model prediction. Real predictions are written to outputs/metrics/*.json after a GPU run.",
+  "task": "both",
+  "input_text_excerpt": "54-year-old with chest pain, started on aspirin 81 mg daily, discharged with cardiology follow-up.",
+  "patient_summary": {
+    "visit_motivation": "chest pain",
+    "patient_information": {"age": "54", "sex": null},
+    "medical_conditions": ["chest pain"],
+    "treatments": [
+      {"name": "aspirin", "dosage": "81 mg", "frequency": "daily", "duration": null, "reason": "chest pain"}
+    ],
+    "discharge": {"follow up": "cardiology", "reason": null}
+  },
+  "entities": [
+    {"text": "aspirin", "label": "MEDICATION", "start": 36, "end": 43},
+    {"text": "chest pain", "label": "CONDITION", "start": 15, "end": 25}
+  ],
+  "provenance": {"summary_valid_json": true, "entities_valid_json": true},
+  "disclaimer": "Provisional automated extraction from synthetic/research text. Subject to clinical review; not validated for clinical use."
+}

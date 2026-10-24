@@ -1,0 +1,145 @@
+# MedMatch Model A — Colab Pro GPU-adaptive LoRA / QLoRA config.
+# Copied from MedGemma_Model_A_Training_Config.yaml and used by prepare_data.py,
+# train.py, evaluate.py, and infer.py.
+#
+# PRECEDENCE: at GPU allocation, deep-merge the selected gpu_profiles.<profile>
+# over model/training. High-memory G4/A100 explicitly override
+# model.load_in_4bit -> false (BF16 LoRA, NOT 4-bit QLoRA, NOT full fine-tune).
+model:
+  id: google/medgemma-1.5-4b-it
+  task: multimodal_text_only_sft
+  load_in_4bit: true
+  quantization_type: nf4
+  double_quantization: true
+  torch_dtype: auto   # GPU profiles override: bf16 on G4/A100/L4; fp16 on T4
+  freeze_vision_encoder: true
+  use_official_chat_template: true
+  supervise_completion_only: true
+
+data:
+  primary_id: AGBonnet/augmented-clinical-notes
+  primary_source: full_note
+  primary_target: summary
+  primary_task: EXTRACT_SUMMARY
+  secondary_id: E3-JSI/synthetic-multi-med-notes-ner-v1
+  secondary_source: text
+  secondary_target: entities
+  secondary_task: EXTRACT_ENTITIES
+  language: english
+  target_primary_examples: 1000
+  target_secondary_examples: 150
+  min_smoke_examples: 10
+  max_smoke_examples: 20
+  split_train: 0.8
+  split_validation: 0.1
+  split_test: 0.1
+  seed: 42
+  dedupe_by_case: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: auto_language_decoder_linear
+
+training:
+  max_seq_length: 1024
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  effective_batch_size: 8
+  learning_rate: 0.0002
+  num_train_epochs: 1
+  warmup_ratio: 0.03
+  lr_scheduler_type: linear
+  optimizer: paged_adamw_8bit
+  gradient_checkpointing: true
+  gradient_checkpointing_kwargs:
+    use_reentrant: false
+  fp16_on_t4: true
+  bf16_on_l4_a100: true
+  logging_steps: 10
+  save_steps: 100
+  save_total_limit: 2
+  report_to: none
+
+evaluation:
+  run_base_model_first: true
+  do_sample: false
+  exact_ner_f1: true
+  json_parse_rate: true
+  evidence_grounding_rate: true
+  compare_negation_dose_dates: true
+  group_split_by_original_case: true
+
+storage:
+  cache_root: /content
+  final_checkpoint_root: /content/drive/MyDrive/medgemma-model-a
+  save_lora_only: true
+  save_tokenizer_processor_config: true
+  save_manifest_metrics: true
+
+gpu_profiles:
+  priority: [g4, a100, l4, t4]
+  auto_detect: true
+  record_gpu_name_vram_and_compute_units: true
+  default_profile: a100_40gb
+  g4:
+    expected_gpu: NVIDIA RTX PRO 6000 Blackwell
+    expected_vram_gb: 96
+    method: bf16_lora
+    load_in_4bit: false
+    precision: bf16
+    max_seq_length: 2048
+    benchmark_seq_length: 4096
+    per_device_train_batch_size: 2
+    gradient_accumulation_steps: 4
+    optimizer: adamw_torch_fused
+  a100_80gb:
+    expected_vram_gb: 80
+    method: bf16_lora
+    load_in_4bit: false
+    precision: bf16
+    max_seq_length: 2048
+    benchmark_seq_length: 4096
+    per_device_train_batch_size: 2
+    gradient_accumulation_steps: 4
+    optimizer: adamw_torch_fused
+  a100_40gb:
+    expected_vram_gb: 40
+    method: bf16_lora
+    load_in_4bit: false
+    precision: bf16
+    max_seq_length: 2048
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    optimizer: adamw_torch_fused
+  l4:
+    expected_vram_gb: 24
+    method: qlora_nf4
+    load_in_4bit: true
+    precision: bf16
+    max_seq_length: 1024
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    optimizer: paged_adamw_8bit
+  t4:
+    expected_vram_gb: 16
+    method: qlora_nf4
+    load_in_4bit: true
+    precision: fp16
+    max_seq_length: 768
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    optimizer: paged_adamw_8bit
+
+experiment_stages:
+  smoke_test_examples: 20
+  first_finetune_primary_examples: 1000
+  first_finetune_secondary_examples: 150
+  second_stage_primary_examples: 5000
+  second_stage_secondary_examples: 500
+  full_dataset_only_if_metrics_improve: true
+  never_use_test_split_for_training: true
+  check_prompt_plus_answer_truncation: true
+  profile_changes_require_logged_reason: true
+  stop_vm_after_artifact_export: true
