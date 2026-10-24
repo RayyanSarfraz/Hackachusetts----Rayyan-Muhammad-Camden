@@ -102,3 +102,60 @@ class ParseModelJsonTests(SimpleTestCase):
         self.assertEqual(entities["conditions"], [{"value": "x"}])
         self.assertEqual(entities["symptoms"], [])  # non-list dropped
         self.assertNotIn("bogus", entities)
+
+    def test_salvages_object_with_unbalanced_brace_in_string(self):
+        """
+        A clinical evidence snippet can contain a lone '{' or '}'. With
+        surrounding prose (so whole-text parse fails) and no code fence, the
+        salvage scan must stay JSON-string-aware and still recover the object.
+        """
+        raw = (
+            "Here is the result:\n"
+            '{"conditions": [{"value": "edema", '
+            '"evidence": "noted {2+} pitting edema, BP high }"}], '
+            '"symptoms": []}\n'
+            "I hope this helps!"
+        )
+        parsed = medical_extractor._parse_model_json(raw)
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed["conditions"][0]["value"], "edema")
+        self.assertEqual(
+            parsed["conditions"][0]["evidence"],
+            "noted {2+} pitting edema, BP high }",
+        )
+
+    def test_marker_token_inside_json_string_does_not_drop_answer(self):
+        """
+        A thinking-marker-looking token (e.g. '</think>') appearing inside a
+        JSON string value must not cause the answer to be truncated/dropped.
+        """
+        raw = (
+            "answer: "
+            '{"conditions": [{"value": "x", '
+            '"evidence": "patient said </think> jokingly"}], "symptoms": []} '
+            "end"
+        )
+        parsed = medical_extractor._parse_model_json(raw)
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed["conditions"][0]["value"], "x")
+        self.assertIn("</think>", parsed["conditions"][0]["evidence"])
+
+    def test_returns_none_for_top_level_array(self):
+        """A top-level JSON array is not the expected object shape -> None."""
+        self.assertIsNone(
+            medical_extractor._parse_model_json('[{"value": "x"}]')
+        )
+
+    def test_prefers_final_object_over_thinking_snippet_without_fence(self):
+        """
+        When the thinking block contains an illustrative bare object and the
+        real answer is a later bare object, the final one must win.
+        """
+        raw = (
+            "<unused94>thought\n"
+            'Example of what NOT to return: {"conditions": [{"value": "WRONG"}]}\n'
+            "Now the real answer.<unused95>\n"
+            '{"conditions": [{"value": "RIGHT"}], "symptoms": []}'
+        )
+        parsed = medical_extractor._parse_model_json(raw)
+        self.assertEqual(parsed["conditions"][0]["value"], "RIGHT")

@@ -15,7 +15,10 @@ Hard rules:
   clean ``{"available": False, "entities": <empty>}`` — never fabricated data.
 - Evidence snippets from the note are preserved when the model provides them.
 - MedGemma is a reasoning model: it emits a "thinking" block before the final
-  answer, so ``_parse_model_json`` strips that and takes the last JSON object.
+  answer, so ``_parse_model_json`` skips that and takes the last JSON object.
+  The salvage scan is JSON-string-aware and also retries the un-stripped text,
+  so a stray brace or a marker token inside a string value can't drop a valid
+  answer.
 """
 from __future__ import annotations
 
@@ -69,6 +72,12 @@ def _strip_thinking(text: str) -> str:
     Reasoning models (e.g. Gemma 3) prepend a "<unused94>thought ...<unused95>"
     block before the final answer. The real answer comes after the LAST such
     marker, so keep only the tail.
+
+    This is a text-level heuristic that is NOT aware of JSON string boundaries,
+    so a marker that happens to appear inside a JSON string value would cut the
+    answer in half. Callers must therefore also try parsing the UNSTRIPPED text
+    (see ``_parse_model_json``) so a marker inside a string can never destroy
+    otherwise-valid JSON.
     """
     markers = list(_THINK_MARKER_RE.finditer(text))
     if markers:
@@ -84,6 +93,75 @@ def _try_load(candidate: str) -> dict | None:
     return data if isinstance(data, dict) else None
 
 
+def _iter_balanced_objects(text: str):
+    """
+    Yield substrings of ``text`` that are balanced ``{...}`` objects, from the
+    LAST object to the first.
+
+    Unlike naive brace counting, this is JSON-string-aware: braces, and the
+    escape sequences, that occur inside a double-quoted string literal are
+    ignored when matching, so an evidence snippet containing a lone ``{`` or
+    ``}`` cannot throw off the depth count. Reasoning models often emit an
+    illustrative JSON snippet before the final answer, so scanning from the end
+    biases toward the real answer.
+    """
+    end = text.rfind("}")
+    while end != -1:
+        depth = 0
+        in_string = False
+        start = -1
+        # Walk backwards from this closing brace to find its matching open.
+        for i in range(end, -1, -1):
+            ch = text[i]
+            if in_string:
+                # Walking backwards, a quote toggles string state unless it is
+                # escaped by a preceding backslash (odd number of backslashes).
+                if ch == '"' and not _escaped_backwards(text, i):
+                    in_string = False
+                continue
+            if ch == '"' and not _escaped_backwards(text, i):
+                in_string = True
+            elif ch == "}":
+                depth += 1
+            elif ch == "{":
+                depth -= 1
+                if depth == 0:
+                    start = i
+                    break
+        if start != -1:
+            yield text[start : end + 1]
+        # Continue searching for an earlier closing brace.
+        end = text.rfind("}", 0, end)
+
+
+def _escaped_backwards(text: str, index: int) -> bool:
+    """True if the character at ``index`` is escaped by preceding backslashes."""
+    backslashes = 0
+    j = index - 1
+    while j >= 0 and text[j] == "\\":
+        backslashes += 1
+        j -= 1
+    return backslashes % 2 == 1
+
+
+def _is_valid_json(text: str) -> bool:
+    """True if ``text`` is a complete, valid JSON document of any type."""
+    try:
+        json.loads(text)
+    except (ValueError, TypeError):
+        return False
+    return True
+
+
+def _salvage_object(text: str) -> dict | None:
+    """Return the last balanced, string-aware ``{...}`` object that parses."""
+    for candidate in _iter_balanced_objects(text):
+        parsed = _try_load(candidate)
+        if parsed is not None:
+            return parsed
+    return None
+
+
 def _parse_model_json(raw: str) -> dict | None:
     """
     Best-effort parse of the model's JSON response.
@@ -92,40 +170,44 @@ def _parse_model_json(raw: str) -> dict | None:
     "thinking" preamble precedes the real answer. Prefers the LAST fenced block
     / JSON object, since reasoning models often include an illustrative JSON
     snippet inside their thoughts before emitting the final one.
+
+    The salvage scan is JSON-string-aware and we try both the thinking-stripped
+    and the original text, so neither an unbalanced brace inside a string value
+    nor a marker token inside a string value can drop a valid answer. Only a
+    top-level JSON object is accepted (arrays/scalars return None).
     """
     if not raw:
         return None
 
-    text = _strip_thinking(raw.strip())
+    original = raw.strip()
+    stripped = _strip_thinking(original)
 
-    # 1. Prefer the last fenced ```json block (the final answer).
-    fences = _FENCE_RE.findall(text)
-    for block in reversed(fences):
-        parsed = _try_load(block.strip())
+    # 1. Prefer the last fenced ```json block (the final answer). Check the
+    #    stripped text first, then the original (a marker inside a fenced
+    #    string must not prevent finding the fence).
+    for source in (stripped, original):
+        for block in reversed(_FENCE_RE.findall(source)):
+            parsed = _try_load(block.strip())
+            if parsed is not None:
+                return parsed
+
+    # 2. Try parsing each candidate text as a whole JSON document. If the text
+    #    is itself valid JSON but not an object (e.g. a top-level array), stop:
+    #    we must not salvage inner objects out of a wrong-shaped document.
+    for source in (stripped, original):
+        parsed = _try_load(source)
         if parsed is not None:
             return parsed
+        if _is_valid_json(source):
+            return None
 
-    # 2. Try the whole (de-fenced) text.
-    parsed = _try_load(text)
-    if parsed is not None:
-        return parsed
-
-    # 3. Salvage the LAST balanced {...} object in the text.
-    end = text.rfind("}")
-    while end != -1:
-        depth = 0
-        for i in range(end, -1, -1):
-            ch = text[i]
-            if ch == "}":
-                depth += 1
-            elif ch == "{":
-                depth -= 1
-                if depth == 0:
-                    parsed = _try_load(text[i : end + 1])
-                    if parsed is not None:
-                        return parsed
-                    break
-        end = text.rfind("}", 0, end)
+    # 3. Salvage the LAST balanced {...} object (string-aware). Try the
+    #    stripped text first, then fall back to the original so a marker token
+    #    inside a string value cannot destroy an otherwise-valid object.
+    for source in (stripped, original):
+        parsed = _salvage_object(source)
+        if parsed is not None:
+            return parsed
 
     return None
 
