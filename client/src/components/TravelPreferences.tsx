@@ -44,7 +44,7 @@ export function TravelPreferences() {
         })}
       </div>
       <p className="mt-2 text-[11px] text-slate-400">
-        Distances shown on trial cards are explicitly labeled mock values, not
+        Distances shown on trial cards are labeled approximate or mock values, not
         computed driving times.
       </p>
     </section>
