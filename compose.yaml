@@ -32,8 +32,19 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-config}
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      # AI model service (MedGemma via vLLM). Empty => engine runs model-"unavailable".
+      MODEL_API_BASE_URL: ${MODEL_API_BASE_URL:-}
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      MODEL_NAME: ${MODEL_NAME:-google/medgemma-1.5-4b-it}
+      # Vector store (ChromaDB local persistent client) — persisted to a volume.
+      CHROMA_PERSIST_DIR: /data/chroma
+      CHROMA_COLLECTION: ${CHROMA_COLLECTION:-clinical_trials}
     volumes:
       - ./api:/app
+      # Trial dataset (read-only) available to the ingest command inside the container.
+      - ./data:/data/source:ro
+      # Persist the Chroma index across container restarts.
+      - chroma_data:/data/chroma
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
@@ -57,3 +68,4 @@ services:
 
 volumes:
   postgres_data:
+  chroma_data:

@@ -14,17 +14,20 @@ list when they disagree, then update this file.
 - Django REST Framework `3.18.0`.
 - Auth: `djangorestframework-simplejwt` `5.5.1` (JWT, rotating + blacklisted
   refresh tokens).
-- Database: PostgreSQL via `psycopg[binary]` `3.2.10`.
+- Database: PostgreSQL via `psycopg[binary]` `3.2.10`. **All models use UUID
+  primary keys** (see decisions.md 2026-10-24).
 - CORS: `django-cors-headers` `4.9.0`.
 - Config: `django-environ` `0.12.0` (settings read from env; see `.env.example`).
 - WSGI server: `gunicorn` `23.0.0`.
+- AI orchestration: `langchain` `1.4.7` + `langchain-openai` `1.7.2` pointed at
+  MedGemma (vLLM, OpenAI-compatible). Vector store: `chromadb` `1.5.9` (local
+  persistent client). `huggingface_hub` `0.36.2`.
 - Dependencies pinned in `api/requirements.txt`.
 
 ## Frontend (`client/`)
 
-- Not yet scaffolded. CORS defaults point at a Vite dev server
-  (`http://localhost:5173`), which suggests a Vite-based client is intended, but
-  nothing is committed yet. Confirm before assuming a framework.
+- Scaffolded: React 19 + TypeScript + Vite + Tailwind (Vitest tests). Dev server
+  on `http://localhost:5173`; the Vite dev proxy forwards `/api` to the backend.
 
 ## Configuration
 
@@ -40,9 +43,31 @@ PowerShell on Windows — chain with `;`, not `&&`.
 ```powershell
 python manage.py runserver        # start the dev server (run manually, not via agent)
 python manage.py migrate          # apply migrations
-python manage.py makemigrations   # create migrations after model changes
 python manage.py test             # run the Django test suite
 python manage.py createsuperuser  # create an admin user
+python manage.py ingest_trials ../data/trials/data.csv   # load trial data -> Postgres + ChromaDB
 ```
 
 Install dependencies: `pip install -r requirements.txt` (from `api/`).
+
+## First-run / after-pull: reset the DB (UUID PK change)
+
+PKs were switched to UUID and the initial migrations were regenerated, so an
+existing int-PK database is incompatible. Reset once before running:
+
+```powershell
+docker compose down -v ; docker compose up --build   # Docker: drops volumes, re-migrates, dev auto-seeds trials
+```
+
+Host Postgres: drop/recreate the DB, then `migrate` and `ingest_trials`.
+
+## Gotchas
+
+- `python manage.py makemigrations` HANGS in this project's shell (produces no
+  output, never returns). Generate migrations with Django's `MigrationWriter`
+  directly (a short throwaway script that calls the autodetector + writer) or
+  run it inside Docker. `migrate` itself works fine.
+- Running `manage.py` on the host needs a reachable Postgres; for DB-free unit
+  tests use `$env:DATABASE_URL="sqlite://:memory:"`.
+- Trial ingestion downloads the ChromaDB default embedder (`all-MiniLM-L6-v2`,
+  ~79MB) on first use; needs network once.

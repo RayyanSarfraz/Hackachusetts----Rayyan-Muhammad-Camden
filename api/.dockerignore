@@ -25,6 +25,13 @@ env/
 staticfiles/
 media/
 
+# Vector store index — lives in a Docker volume, not the image
+.chroma/
+
+# Throwaway helper scripts
+_make_migration.py
+_probe_*.py
+
 # Editor / OS
 .vscode/
 .idea/

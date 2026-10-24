@@ -88,3 +88,35 @@ class TrialSearchView(APIView):
 
         result = pipeline.run_trial_search(profile)
         return Response(result, status=status.HTTP_200_OK)
+
+
+class MatchView(APIView):
+    """
+    POST /api/engine/match/
+
+    Unified match + clarify flow in one call. Validates the patient, runs the
+    engine (extract + normalize + retrieve/match the real dataset), and returns
+    matched trials plus clarifying questions for matcher-relevant gaps.
+
+    Accepts optional ``answers`` (a map of required_fact_key -> value from a
+    previously-generated form) which are merged into the profile before
+    re-matching, enabling a fill-form -> refine loop.
+
+    Public for the demo (like the integration + frontend-seam endpoints).
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PatientSerializer(data=request.data.get("patient", {}))
+        serializer.is_valid(raise_exception=True)
+
+        answers = request.data.get("answers") or {}
+        if not isinstance(answers, dict):
+            return Response(
+                {"error": "`answers` must be an object of fact_key -> value."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        result = pipeline.run_match(serializer.validated_data, answers=answers)
+        return Response(result, status=status.HTTP_200_OK)
