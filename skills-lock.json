@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "skills": {
+    "aws-development": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "aws-development/SKILL.md",
+      "computedHash": "db6b70a7537bf9cd3dc68eb6771616b76903dab44ce314368986210800c52c18"
+    },
+    "cloud-build-basics": {
+      "source": "google/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloud/cloud-build-basics/SKILL.md",
+      "computedHash": "ccc36a906c1fdd7de642fed0a2518f58cba5e5f8a8e91de2865966df3e2ef25e"
+    },
+    "django-rest-framework": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/frameworks/django/skills/django-rest-framework/SKILL.md",
+      "computedHash": "ad0044e5047bcd30d48daad14486ba3128c51418aa451de90ce01b3f31a140a8"
+    },
+    "django-tdd": {
+      "source": "affaan-m/ecc",
+      "sourceType": "github",
+      "skillPath": "skills/django-tdd/SKILL.md",
+      "computedHash": "65809c76dd072aa8d59c32d9119987429e15047b5ea4708003de145327710db4"
+    },
+    "docker-project-foundations": {
+      "source": "docker/skills",
+      "sourceType": "github",
+      "skillPath": "skills/docker-project-foundations/SKILL.md",
+      "computedHash": "7b7cc4fb8b60b65f60aefc203b5f21e55b85b0bc1d1db512b1dba36d3c278112"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
+    },
+    "hf-cli": {
+      "source": "huggingface/skills",
+      "sourceType": "github",
+      "skillPath": "skills/hf-cli/SKILL.md",
+      "computedHash": "eaca5e859e0c3055a1f22a9c18c29d3c3a39c4bab69700a1c247666d985e2b9f"
+    },
+    "huggingface-datasets": {
+      "source": "huggingface/skills",
+      "sourceType": "github",
+      "skillPath": "skills/huggingface-datasets/SKILL.md",
+      "computedHash": "d28d1ee4a61133ab6c1e12c74094681c2026c7e656784bd09831f91618fd0120"
+    },
+    "jwt-security": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "jwt-security/SKILL.md",
+      "computedHash": "4f4ac96906e45977591928ff3f176cdc908c014c45fdebb9bf80ba6f3301067a"
+    },
+    "matplotlib": {
+      "source": "k-dense-ai/scientific-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/matplotlib/SKILL.md",
+      "computedHash": "f423a12fe52b7daa706f32872a45af1d6ae4050eb06f2f29ae42efcfc84ec8f2"
+    },
+    "numpy-best-practices": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "numpy-best-practices/SKILL.md",
+      "computedHash": "c4b9d29d388481c1a256d0a9dbeed8e7f167c3f50c71563162050714133b76e0"
+    },
+    "pandas-best-practices": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "pandas-best-practices/SKILL.md",
+      "computedHash": "257718463935cbd02899304f565952b2a2d4abeac3e7c42b34909d9fe6d70396"
+    },
+    "playwright": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/playwright/skills/playwright/SKILL.md",
+      "computedHash": "fbbea9f3498ba12d8edf5986df64b752dd813d8dc64f6a0582ab96ce56070728"
+    },
+    "python": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "python/SKILL.md",
+      "computedHash": "123633b233864d45acccf751e473321ac3df9f25acc22418f625dc57ddf20e14"
+    },
+    "python-testing-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/python-development/skills/python-testing-patterns/SKILL.md",
+      "computedHash": "66b0f13c33ca5689ce6d59dfc6c441bacf3d017299d8ee3c30a028299e5d28e9"
+    },
+    "pytorch": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "pytorch/SKILL.md",
+      "computedHash": "0bc4289dcfc531ccd87a8a3f6436bf4a67ec16a1b932e293a02ce0e23181031b"
+    },
+    "rag": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-ai/skills/rag/SKILL.md",
+      "computedHash": "48d5e92e57e89e4a10319757d3b9d62228335490d4d3da8f4e97a835848afce0"
+    },
+    "seaborn": {
+      "source": "k-dense-ai/scientific-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seaborn/SKILL.md",
+      "computedHash": "45b770dfae89d24c92fca9db1c899aee483aef415998496348fd9606af4511cc"
+    },
+    "shadcn": {
+      "source": "shadcn-ui/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "7859e9a064940a1a0010c992b63e4633c4f5f39ed367a23c16f24029816b1703"
+    },
+    "train-sentence-transformers": {
+      "source": "huggingface/skills",
+      "sourceType": "github",
+      "skillPath": "skills/train-sentence-transformers/SKILL.md",
+      "computedHash": "a4cb483748d9ca2b9d3faa1340e3896389a95798a5dae1aeef13df2b1c31af56"
+    },
+    "transformers": {
+      "source": "k-dense-ai/scientific-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/transformers/SKILL.md",
+      "computedHash": "06883eb7e464e692c9f0649e45cba500e38a5dce8519abcc67c40f06c899b7d8"
+    },
+    "typescript": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "typescript/SKILL.md",
+      "computedHash": "ec4c7e4f71a81b51aa68817f25c07463ae8f912dbaed5f871716915a97f7d562"
+    },
+    "typescript-advanced-types": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
+      "computedHash": "bc33bc9653d649a461e49abe45634b6b11a7aeeae552b05ec4d54d4589d16739"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "computedHash": "3f14af7f5690695209c22fbf8c8d133769a86d64892602c09bb13f135e14e857"
+    }
+  }
+}
