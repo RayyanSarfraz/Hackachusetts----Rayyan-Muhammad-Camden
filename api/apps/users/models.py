@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
@@ -38,6 +40,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     """Custom user that authenticates with email instead of username."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None
     email = models.EmailField(_("email address"), unique=True)
 
@@ -65,6 +68,8 @@ class PatientProfile(models.Model):
         MALE = "male", _("Male")
         INTERSEX = "intersex", _("Intersex")
         UNKNOWN = "unknown", _("Unknown / Prefer not to specify")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

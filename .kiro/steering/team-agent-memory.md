@@ -23,6 +23,7 @@ environment permissions, and `.kiro/AGENTS.md`. Those win on conflict.
 | [architecture.md](architecture.md) | Backend and frontend design. |
 | [decisions.md](decisions.md) | Dated log of team decisions and rationale. |
 | [progress.md](progress.md) | Current progress, next steps, and open questions. |
+| [integration.md](integration.md) | The `integration` app (Camden): contracts, endpoints, ownership. |
 
 ## How to use this memory
 

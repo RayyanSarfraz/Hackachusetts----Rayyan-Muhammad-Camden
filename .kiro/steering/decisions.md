@@ -19,6 +19,48 @@ Status: active | superseded by <date/title>.
 
 ---
 
+## 2026-10-24 — UUID primary keys on all DB tables
+Decision: every Django model uses a UUID primary key
+(`id = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)`) —
+`users.User`, `users.PatientProfile`, `engine.Trial`. New models must follow
+this. `engine.Trial` keeps `nct_id` as the public business key (ChromaDB + the
+frontend key on `nct_id`, not the UUID).
+Why: non-guessable IDs, no enumeration of users/patients, safe to expose in URLs.
+Migration note: the initial migrations were REGENERATED (not added on top), so an
+existing int-PK dev database is incompatible — reset it once (see progress.md
+"Action required first"). JWT auth was verified to work with UUID `user_id`.
+Status: active.
+
+## 2026-10-24 — Trial data: ChromaDB (search) + PostgreSQL (full record)
+Decision: ingest clinical-trial data into both stores keyed by `nct_id` —
+embedded text (title + conditions [+ eligibility]) into a local persistent
+ChromaDB collection for semantic retrieval, full rows into the `engine.Trial`
+Postgres table. Load via `python manage.py ingest_trials <csv>` (idempotent
+upsert). ChromaDB runs in LOCAL persistent-client mode (not the networked
+server, which has a multi-tenant auth CVE); embeddings use Chroma's default
+`all-MiniLM-L6-v2`, not MedGemma.
+Why: semantic search needs vectors; Postgres is the source of truth joined back
+in after retrieval.
+Status: active.
+
+## 2026-10-24 — Dev-only auto-seed of trial data
+Decision: `api/entrypoint.sh` auto-runs `ingest_trials` ONLY when settings are
+development, the CSV exists, and the `Trial` table is empty. Production never
+auto-seeds — trial data there is loaded deliberately.
+Why: zero-friction `docker compose up` for the team in dev; keep data loading an
+explicit, observable step in prod.
+Status: active.
+
+## 2026-10-24 — AI model: MedGemma via vLLM (OpenAI-compatible)
+Decision: the engine's `model_client` points at MedGemma
+(`google/medgemma-1.5-4b-it`) on a Hugging Face Inference Endpoint via LangChain
+`ChatOpenAI`. Config via `MODEL_API_BASE_URL` (ends in `/v1`), `MODEL_API_KEY`,
+`MODEL_NAME`. Empty base URL => model "unavailable" and the engine degrades
+gracefully (never fabricates). MedGemma is a reasoning model, so the extractor's
+JSON parser strips the thinking block and takes the last JSON object.
+Why: hosted, OpenAI-compatible, medical-domain model without self-hosting.
+Status: active.
+
 ## 2026-10-24 — Modular monolith for the backend
 Decision: organize Django features as self-contained modules under `apps/`,
 mounted under `/api/`, instead of one large app or separate services.
