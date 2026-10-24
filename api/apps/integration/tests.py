@@ -732,8 +732,6 @@ class TestIntegration(unittest.TestCase):
         self.assertIn("needs_clarification", statuses)
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 class TestRegressionFixes(unittest.TestCase):
@@ -795,3 +793,91 @@ class TestRegressionFixes(unittest.TestCase):
                  if q.required_fact_key == "insulin_use")
         updated = apply_answer_to_profile(profile, q, "unknown")
         self.assertIn("insulin_use", updated.unknowns)
+
+
+# =============================================================================
+# FRONTEND SEAM TESTS
+# =============================================================================
+
+from apps.integration.frontend_demo import (  # noqa: E402
+    DEMO_TRIALS,
+    DEMO_PATIENT_NOTES,
+    FACT_DEFINITIONS,
+    get_demo_trials,
+    parse_notes,
+)
+
+
+class TestFrontendDemoTrials(unittest.TestCase):
+    """The /api/trials payload must match the frontend's Trial shape."""
+
+    def test_returns_four_demo_trials(self):
+        trials = get_demo_trials()
+        self.assertEqual(len(trials), 4)
+        self.assertEqual([t["id"] for t in trials], ["DEMO-A", "DEMO-B", "DEMO-C", "DEMO-D"])
+
+    def test_trial_shape_matches_frontend(self):
+        trial = get_demo_trials()[0]
+        # Top-level keys the frontend Trial interface requires.
+        for key in ("id", "name", "location", "distance", "sourceLabel", "criteria"):
+            self.assertIn(key, trial)
+        self.assertEqual(trial["distance"]["label"], "mock")
+        crit = trial["criteria"][0]
+        for key in ("id", "text", "category", "dependsOn", "estimatedEffort", "kind"):
+            self.assertIn(key, crit)
+        self.assertIsInstance(crit["dependsOn"], list)
+
+    def test_get_demo_trials_is_deep_copied(self):
+        a = get_demo_trials()
+        a[0]["criteria"].clear()
+        b = get_demo_trials()
+        self.assertGreater(len(b[0]["criteria"]), 0)
+
+
+class TestFrontendNoteParser(unittest.TestCase):
+    """parse_notes must mirror the frontend's deterministic parser output."""
+
+    def test_demo_note_extracts_documented_facts(self):
+        profile = parse_notes(DEMO_PATIENT_NOTES)
+        facts = profile["facts"]
+        self.assertEqual(facts["age"]["value"], 54)
+        self.assertTrue(facts["age"]["known"])
+        self.assertEqual(facts["condition"]["value"], "Non-small cell lung cancer")
+        self.assertEqual(facts["location"]["value"], "Boston, MA")
+        self.assertEqual(facts["previousTreatment"]["value"], "Chemotherapy")
+
+    def test_undocumented_facts_remain_unknown(self):
+        profile = parse_notes(DEMO_PATIENT_NOTES)
+        facts = profile["facts"]
+        for key in ("egfrStatus", "cancerStage", "ecogStatus"):
+            self.assertIsNone(facts[key]["value"])
+            self.assertFalse(facts[key]["known"])
+
+    def test_profile_has_all_fact_keys(self):
+        profile = parse_notes(DEMO_PATIENT_NOTES)
+        expected = {d["key"] for d in FACT_DEFINITIONS}
+        self.assertEqual(set(profile["facts"].keys()), expected)
+
+    def test_fact_shape_matches_frontend(self):
+        fact = parse_notes(DEMO_PATIENT_NOTES)["facts"]["age"]
+        for key in ("key", "label", "value", "known", "source"):
+            self.assertIn(key, fact)
+        self.assertEqual(fact["source"], "parsed")
+
+    def test_empty_notes_all_unknown(self):
+        profile = parse_notes("")
+        for fact in profile["facts"].values():
+            self.assertIsNone(fact["value"])
+            self.assertFalse(fact["known"])
+
+    def test_egfr_positive_extracted(self):
+        profile = parse_notes("EGFR mutation detected (activating).")
+        self.assertEqual(profile["facts"]["egfrStatus"]["value"], "positive")
+
+    def test_stage_normalized_to_roman(self):
+        profile = parse_notes("Stage 4 disease confirmed.")
+        self.assertEqual(profile["facts"]["cancerStage"]["value"], "IV")
+
+
+if __name__ == "__main__":
+    unittest.main()

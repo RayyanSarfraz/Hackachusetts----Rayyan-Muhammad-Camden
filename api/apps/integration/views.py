@@ -20,6 +20,7 @@ from .orchestrator import (
     assess_explicit_boolean_rules,
 )
 from .fixtures import get_synthetic_trials, get_synthetic_patient
+from .frontend_demo import DEMO_PATIENT_NOTES, get_demo_trials, parse_notes
 
 
 class CompareTrialsView(APIView):
@@ -227,3 +228,59 @@ class DemoComparisonView(APIView):
     def get(self, request):
         response = run_synthetic_demo()
         return Response(response.to_dict())
+
+
+# =============================================================================
+# FRONTEND-FACING SEAM
+#
+# These two endpoints match the shapes the React client consumes through its
+# TrialBridgeApi seam (client/src/types/domain.ts). They let the frontend swap
+# its LocalMockApi for an HttpTrialBridgeApi with no change to its own engine:
+#
+#   GET  /api/trials        -> Trial[]        (unassessed; criteria carry dependsOn)
+#   POST /api/extract-facts -> PatientProfile (facts keyed by FactKey; unknown = null)
+#
+# They are deliberately thin and stateless. All data is fictional.
+# =============================================================================
+
+
+class TrialsView(APIView):
+    """
+    Return candidate trials in the frontend's `Trial` shape.
+
+    GET /api/trials/
+
+    The frontend's own assessor / ranking / question engine consume these
+    unassessed trials; this endpoint intentionally does NOT pre-assess them.
+    """
+
+    permission_classes = []  # Public for demo
+
+    def get(self, request):
+        return Response(get_demo_trials())
+
+
+class ExtractFactsView(APIView):
+    """
+    Extract structured patient facts from free-text notes.
+
+    POST /api/extract-facts/
+        { "notes": "<free text>" }
+
+    Returns a PatientProfile in the frontend's shape: facts keyed by FactKey,
+    undocumented facts left Unknown (value null). Deterministic, no LLM.
+    If `notes` is omitted, the fictional demo note is used.
+    """
+
+    permission_classes = []  # Public for demo
+
+    def post(self, request):
+        notes = request.data.get("notes")
+        if notes is None:
+            notes = DEMO_PATIENT_NOTES
+        if not isinstance(notes, str):
+            return Response(
+                {"error": "`notes` must be a string"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(parse_notes(notes))
