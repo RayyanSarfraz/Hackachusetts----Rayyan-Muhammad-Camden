@@ -193,3 +193,18 @@ CORS_ALLOWED_ORIGINS = env.list(
     "DJANGO_CORS_ALLOWED_ORIGINS",
     default=["http://localhost:5173", "http://127.0.0.1:5173"],
 )
+
+
+# Engine: AI model service + vector store configuration.
+# These drive the clinical-trial copilot pipeline. When the model base URL is
+# empty, the engine reports the model as unavailable and never fabricates data.
+
+ENGINE = {
+    # Fine-tuned Qwen served via vLLM (OpenAI-compatible /v1 endpoint).
+    "MODEL_API_BASE_URL": env("MODEL_API_BASE_URL", default=""),
+    "MODEL_API_KEY": env("MODEL_API_KEY", default=""),
+    "MODEL_NAME": env("MODEL_NAME", default="qwen"),
+    # ChromaDB local persistent client.
+    "CHROMA_PERSIST_DIR": env("CHROMA_PERSIST_DIR", default=str(BASE_DIR / ".chroma")),
+    "CHROMA_COLLECTION": env("CHROMA_COLLECTION", default="clinical_trials"),
+}

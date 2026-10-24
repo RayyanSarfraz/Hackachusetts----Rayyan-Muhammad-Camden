@@ -36,3 +36,6 @@ staticfiles/
 htmlcov/
 coverage.xml
 .tox/
+
+# Local ChromaDB vector store (engine trial retrieval)
+.chroma/

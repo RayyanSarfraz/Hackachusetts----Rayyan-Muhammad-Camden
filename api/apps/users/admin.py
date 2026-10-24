@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from apps.users.models import PatientProfile
+
 User = get_user_model()
 
 
@@ -37,3 +39,19 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+
+
+@admin.register(PatientProfile)
+class PatientProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "primary_condition",
+        "age",
+        "state",
+        "extraction_available",
+        "created_at",
+    )
+    list_filter = ("state", "extraction_available", "sex_for_eligibility")
+    search_fields = ("user__email", "primary_condition", "city")
+    readonly_fields = ("created_at", "updated_at")

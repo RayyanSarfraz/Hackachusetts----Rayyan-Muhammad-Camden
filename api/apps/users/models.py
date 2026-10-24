@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -47,3 +48,67 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class PatientProfile(models.Model):
+    """
+    Persisted patient intake for the clinical-trial copilot.
+
+    Stores both user-provided and AI-extracted medical information. List fields
+    are JSON arrays of fact objects, each carrying a ``source`` ("user" or
+    "extracted") so provenance is never lost. Missing information stays null or
+    empty — nothing here is ever fabricated.
+    """
+
+    class Sex(models.TextChoices):
+        FEMALE = "female", _("Female")
+        MALE = "male", _("Male")
+        INTERSEX = "intersex", _("Intersex")
+        UNKNOWN = "unknown", _("Unknown / Prefer not to specify")
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="patient_profiles",
+    )
+
+    # Basic patient information.
+    age = models.PositiveIntegerField(null=True, blank=True)
+    primary_condition = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=120, blank=True)
+    state = models.CharField(max_length=64, default="MA")
+    sex_for_eligibility = models.CharField(
+        max_length=16,
+        choices=Sex.choices,
+        null=True,
+        blank=True,
+    )
+
+    # Free-text clinical note (treated as untrusted input downstream).
+    medical_note = models.TextField(blank=True)
+
+    # Structured medical lists. Each item is a dict that includes a "source"
+    # key ("user" | "extracted"). Defaults to an empty list, never fabricated.
+    conditions = models.JSONField(default=list, blank=True)
+    symptoms = models.JSONField(default=list, blank=True)
+    medications = models.JSONField(default=list, blank=True)
+    previous_treatments = models.JSONField(default=list, blank=True)
+    lab_results = models.JSONField(default=list, blank=True)
+
+    # Conflicts flagged between user-provided and AI-extracted values.
+    extraction_conflicts = models.JSONField(default=list, blank=True)
+
+    # Whether the AI extractor actually ran for this profile.
+    extraction_available = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        verbose_name = "patient profile"
+        verbose_name_plural = "patient profiles"
+
+    def __str__(self):
+        label = self.primary_condition or "unspecified condition"
+        return f"PatientProfile<{self.user_id}: {label}>"
