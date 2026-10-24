@@ -1,0 +1,210 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "eleanor-whitfield-chf",
+        "gender": "female",
+        "birthDate": "1954-11-05",
+        "name": [
+          {
+            "text": "Eleanor Whitfield"
+          }
+        ],
+        "address": [
+          {
+            "city": "Springfield",
+            "state": "MA"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Heart failure with reduced ejection fraction (EF 35%)"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Chronic kidney disease, stage 3"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Atrial fibrillation"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Type 2 diabetes mellitus"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "NT-proBNP"
+        },
+        "effectiveDateTime": "2026-10-19",
+        "valueQuantity": {
+          "value": 2450.0,
+          "unit": "pg/mL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Ejection fraction"
+        },
+        "effectiveDateTime": "2026-09-14",
+        "valueQuantity": {
+          "value": 35.0,
+          "unit": "%"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "eGFR"
+        },
+        "effectiveDateTime": "2026-10-19",
+        "valueQuantity": {
+          "value": 48.0,
+          "unit": "mL/min/1.73m2"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Potassium"
+        },
+        "effectiveDateTime": "2026-10-19",
+        "valueQuantity": {
+          "value": 4.6,
+          "unit": "mmol/L"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "HbA1c"
+        },
+        "effectiveDateTime": "2026-10-02",
+        "valueQuantity": {
+          "value": 6.9,
+          "unit": "%"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Furosemide 40 mg, twice daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Carvedilol 12.5 mg, twice daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Sacubitril/valsartan 49/51 mg, twice daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Apixaban 5 mg, twice daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Empagliflozin 10 mg, once daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "code": {
+          "text": "Sulfa drugs (hives)"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Cardiac catheterization (2024, no intervention)"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Cardioversion for atrial fibrillation (2023)"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1092 >>
+stream
+BT
+/F1 11 Tf
+16 TL
+72 740 Td
+(FICTIONAL PATIENT NOTE - DEMO DATA ONLY) Tj
+T* () Tj
+T* (The patient is a 54-year-old female.) Tj
+T* (The patient's primary condition is Type 2 Diabetes.) Tj
+T* (The patient lives in Boston, Massachusetts.) Tj
+T* () Tj
+T* (The patient has Type 2 Diabetes, diagnosed in 2017.) Tj
+T* (The patient also has high blood pressure \(hypertension\).) Tj
+T* (The patient also has high cholesterol \(hyperlipidemia\).) Tj
+T* () Tj
+T* (Symptoms: the patient reports fatigue, blurred vision, and numbness) Tj
+T* (in both feet.) Tj
+T* () Tj
+T* (Current medications: the patient takes Metformin 1000 mg twice daily) Tj
+T* (for diabetes. The patient takes Lisinopril 20 mg once daily for blood) Tj
+T* (pressure. The patient takes Atorvastatin 40 mg once daily for) Tj
+T* (cholesterol.) Tj
+T* () Tj
+T* (Laboratory results: HbA1c is 7.8 percent. Fasting glucose is 148) Tj
+T* (mg/dL. Blood pressure is 132/84 mmHg.) Tj
+T* () Tj
+T* (The patient is looking for clinical trials for Type 2 Diabetes.) Tj
+T* (The patient prefers studies within 50 miles with no overnight stays.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001385 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1482
+%%EOF

@@ -1,0 +1,82 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1901 >>
+stream
+BT
+/F1 10 Tf
+15 TL
+54 750 Td
+(CONFIDENTIAL PATIENT INTAKE NOTE  \(FICTIONAL - DEMO DATA ONLY\)) Tj
+T* () Tj
+T* (Patient: Sofia Ramirez          MRN: DEMO-10244) Tj
+T* (Age: 41        Sex: Female         Date: 2026-10-24) Tj
+T* (Location: Cambridge, MA) Tj
+T* () Tj
+T* (CHIEF COMPLAINT) Tj
+T* (Joint pain and morning stiffness in hands and wrists.) Tj
+T* () Tj
+T* (HISTORY OF PRESENT ILLNESS) Tj
+T* (41-year-old woman with seropositive rheumatoid arthritis diagnosed in 2021, reporting) Tj
+T* (increasing morning stiffness lasting over an hour and swelling in the metacarpophalangeal) Tj
+T* (joints despite methotrexate.) Tj
+T* () Tj
+T* (ACTIVE DIAGNOSES / CONDITIONS) Tj
+T* (- Rheumatoid arthritis \(seropositive, dx 2021\)) Tj
+T* (- Hypothyroidism) Tj
+T* (- Vitamin D deficiency) Tj
+T* () Tj
+T* (SYMPTOMS) Tj
+T* (Symmetric joint pain, Morning stiffness, Hand and wrist swelling, Fatigue.) Tj
+T* () Tj
+T* (CURRENT MEDICATIONS) Tj
+T* (- Methotrexate 20 mg, once weekly \(active\)) Tj
+T* (- Folic acid 1 mg, daily \(active\)) Tj
+T* (- Levothyroxine 75 mcg, once daily \(active\)) Tj
+T* (- Hydroxychloroquine 200 mg, twice daily \(active\)) Tj
+T* (- Prednisone 5 mg, once daily \(discontinued\)) Tj
+T* () Tj
+T* (PREVIOUS TREATMENTS) Tj
+T* (- Sulfasalazine \(discontinued 2022, GI intolerance\)) Tj
+T* (- Physical therapy for hand function \(2023\)) Tj
+T* () Tj
+T* (ALLERGIES) Tj
+T* (No known drug allergies.) Tj
+T* () Tj
+T* (LABS / MEASUREMENTS) Tj
+T* (- Anti-CCP antibody: positive  \(2026-09-30\)) Tj
+T* (- Rheumatoid factor: 88 IU/mL  \(2026-09-30\)) Tj
+T* (- CRP: 14 mg/L  \(2026-10-10\)) Tj
+T* (- ESR: 42 mm/hr  \(2026-10-10\)) Tj
+T* (- TSH: 2.1 mIU/L  \(2026-10-10\)) Tj
+T* () Tj
+T* (ASSESSMENT / PLAN) Tj
+T* (Consider biologic DMARD trials for moderate-to-severe RA inadequately controlled on) Tj
+T* (methotrexate. Patient prefers studies within 30 miles and wants to avoid overnight stays.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000002194 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2291
+%%EOF

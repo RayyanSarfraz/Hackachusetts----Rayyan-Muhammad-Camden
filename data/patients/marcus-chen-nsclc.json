@@ -1,0 +1,198 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "marcus-chen-nsclc",
+        "gender": "male",
+        "birthDate": "1963-03-12",
+        "name": [
+          {
+            "text": "Marcus Chen"
+          }
+        ],
+        "address": [
+          {
+            "city": "Worcester",
+            "state": "MA"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Non-small cell lung cancer (stage IIIB, dx 2026-08)"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "COPD"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Hypertension"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "ECOG performance status"
+        },
+        "effectiveDateTime": "2026-10-15",
+        "valueQuantity": {
+          "value": 1.0,
+          "unit": ""
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Hemoglobin"
+        },
+        "effectiveDateTime": "2026-10-15",
+        "valueQuantity": {
+          "value": 11.2,
+          "unit": "g/dL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Platelets"
+        },
+        "effectiveDateTime": "2026-10-15",
+        "valueQuantity": {
+          "value": 180.0,
+          "unit": "x10^9/L"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Creatinine"
+        },
+        "effectiveDateTime": "2026-10-15",
+        "valueQuantity": {
+          "value": 0.9,
+          "unit": "mg/dL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "EGFR mutation"
+        },
+        "effectiveDateTime": "2026-09-02",
+        "valueString": "negative"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "PD-L1 expression"
+        },
+        "effectiveDateTime": "2026-09-02",
+        "valueString": "45%"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Carboplatin AUC 5 IV, every 3 weeks"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Paclitaxel 200 mg/m2 IV, every 3 weeks"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Amlodipine 10 mg, once daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Albuterol inhaler 2 puffs, as needed"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "code": {
+          "text": "Penicillin (rash)"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Lobectomy evaluation - deferred (locally advanced)"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Smoking cessation program (2015)"
+        }
+      }
+    }
+  ]
+}

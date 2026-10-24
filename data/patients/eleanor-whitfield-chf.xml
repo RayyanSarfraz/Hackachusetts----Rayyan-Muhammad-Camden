@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HealthData locale="en_US">
+  <Me HKCharacteristicTypeIdentifierBiologicalSex="HKBiologicalSexFemale" HKCharacteristicTypeIdentifierDateOfBirth="1954-11-05"/>
+  <Record type="HKQuantityTypeIdentifierNT-proBNP" value="2450" unit="pg/mL" startDate="2026-10-19 09:00:00 -0500" endDate="2026-10-19 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierEjectionfraction" value="35" unit="%" startDate="2026-09-14 09:00:00 -0500" endDate="2026-09-14 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifiereGFR" value="48" unit="mL/min/1.73m2" startDate="2026-10-19 09:00:00 -0500" endDate="2026-10-19 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierPotassium" value="4.6" unit="mmol/L" startDate="2026-10-19 09:00:00 -0500" endDate="2026-10-19 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierHbA1c" value="6.9" unit="%" startDate="2026-10-02 09:00:00 -0500" endDate="2026-10-02 09:00:00 -0500"/>
+</HealthData>

@@ -1,0 +1,46 @@
+CONFIDENTIAL PATIENT INTAKE NOTE  (FICTIONAL - DEMO DATA ONLY)
+
+Patient: Sofia Ramirez          MRN: DEMO-10244
+Age: 41        Sex: Female         Date: 2026-10-24
+Location: Cambridge, MA
+
+CHIEF COMPLAINT
+Joint pain and morning stiffness in hands and wrists.
+
+HISTORY OF PRESENT ILLNESS
+41-year-old woman with seropositive rheumatoid arthritis diagnosed in 2021, reporting
+increasing morning stiffness lasting over an hour and swelling in the metacarpophalangeal
+joints despite methotrexate.
+
+ACTIVE DIAGNOSES / CONDITIONS
+- Rheumatoid arthritis (seropositive, dx 2021)
+- Hypothyroidism
+- Vitamin D deficiency
+
+SYMPTOMS
+Symmetric joint pain, Morning stiffness, Hand and wrist swelling, Fatigue.
+
+CURRENT MEDICATIONS
+- Methotrexate 20 mg, once weekly (active)
+- Folic acid 1 mg, daily (active)
+- Levothyroxine 75 mcg, once daily (active)
+- Hydroxychloroquine 200 mg, twice daily (active)
+- Prednisone 5 mg, once daily (discontinued)
+
+PREVIOUS TREATMENTS
+- Sulfasalazine (discontinued 2022, GI intolerance)
+- Physical therapy for hand function (2023)
+
+ALLERGIES
+No known drug allergies.
+
+LABS / MEASUREMENTS
+- Anti-CCP antibody: positive  (2026-09-30)
+- Rheumatoid factor: 88 IU/mL  (2026-09-30)
+- CRP: 14 mg/L  (2026-10-10)
+- ESR: 42 mm/hr  (2026-10-10)
+- TSH: 2.1 mIU/L  (2026-10-10)
+
+ASSESSMENT / PLAN
+Consider biologic DMARD trials for moderate-to-severe RA inadequately controlled on
+methotrexate. Patient prefers studies within 30 miles and wants to avoid overnight stays.

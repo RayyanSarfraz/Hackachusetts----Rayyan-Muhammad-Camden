@@ -1,0 +1,47 @@
+CONFIDENTIAL PATIENT INTAKE NOTE  (FICTIONAL - DEMO DATA ONLY)
+
+Patient: Eleanor Whitfield          MRN: DEMO-10258
+Age: 72        Sex: Female         Date: 2026-10-24
+Location: Springfield, MA
+
+CHIEF COMPLAINT
+Shortness of breath and ankle swelling, worse when lying flat.
+
+HISTORY OF PRESENT ILLNESS
+72-year-old woman with heart failure with reduced ejection fraction (HFrEF, EF 35%) and
+chronic kidney disease stage 3, presenting with progressive orthopnea, bilateral
+lower-extremity edema, and a 6-pound weight gain over one week.
+
+ACTIVE DIAGNOSES / CONDITIONS
+- Heart failure with reduced ejection fraction (EF 35%)
+- Chronic kidney disease, stage 3
+- Atrial fibrillation
+- Type 2 diabetes mellitus
+
+SYMPTOMS
+Orthopnea, Lower-extremity edema, Fatigue, Palpitations.
+
+CURRENT MEDICATIONS
+- Furosemide 40 mg, twice daily (active)
+- Carvedilol 12.5 mg, twice daily (active)
+- Sacubitril/valsartan 49/51 mg, twice daily (active)
+- Apixaban 5 mg, twice daily (active)
+- Empagliflozin 10 mg, once daily (active)
+
+PREVIOUS TREATMENTS
+- Cardiac catheterization (2024, no intervention)
+- Cardioversion for atrial fibrillation (2023)
+
+ALLERGIES
+Sulfa drugs (hives).
+
+LABS / MEASUREMENTS
+- NT-proBNP: 2450 pg/mL  (2026-10-19)
+- Ejection fraction: 35 %  (2026-09-14)
+- eGFR: 48 mL/min/1.73m2  (2026-10-19)
+- Potassium: 4.6 mmol/L  (2026-10-19)
+- HbA1c: 6.9 %  (2026-10-02)
+
+ASSESSMENT / PLAN
+Evaluate for HFrEF device and drug trials. Optimize diuresis. Patient has limited mobility;
+prefers trial sites within 25 miles and no overnight stays.

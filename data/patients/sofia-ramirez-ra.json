@@ -1,0 +1,188 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sofia-ramirez-ra",
+        "gender": "female",
+        "birthDate": "1985-07-28",
+        "name": [
+          {
+            "text": "Sofia Ramirez"
+          }
+        ],
+        "address": [
+          {
+            "city": "Cambridge",
+            "state": "MA"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Rheumatoid arthritis (seropositive, dx 2021)"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Hypothyroidism"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "code": {
+          "text": "Vitamin D deficiency"
+        },
+        "clinicalStatus": {
+          "text": "active"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Anti-CCP antibody"
+        },
+        "effectiveDateTime": "2026-09-30",
+        "valueString": "positive"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "Rheumatoid factor"
+        },
+        "effectiveDateTime": "2026-09-30",
+        "valueQuantity": {
+          "value": 88.0,
+          "unit": "IU/mL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "CRP"
+        },
+        "effectiveDateTime": "2026-10-10",
+        "valueQuantity": {
+          "value": 14.0,
+          "unit": "mg/L"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "ESR"
+        },
+        "effectiveDateTime": "2026-10-10",
+        "valueQuantity": {
+          "value": 42.0,
+          "unit": "mm/hr"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "text": "TSH"
+        },
+        "effectiveDateTime": "2026-10-10",
+        "valueQuantity": {
+          "value": 2.1,
+          "unit": "mIU/L"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Methotrexate 20 mg, once weekly"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Folic acid 1 mg, daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Levothyroxine 75 mcg, once daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Hydroxychloroquine 200 mg, twice daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "status": "stopped",
+        "medicationCodeableConcept": {
+          "text": "Prednisone 5 mg, once daily"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Sulfasalazine (discontinued 2022, GI intolerance)"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "status": "completed",
+        "code": {
+          "text": "Physical therapy for hand function (2023)"
+        }
+      }
+    }
+  ]
+}

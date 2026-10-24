@@ -1,0 +1,47 @@
+CONFIDENTIAL PATIENT INTAKE NOTE  (FICTIONAL - DEMO DATA ONLY)
+
+Patient: Marcus Chen          MRN: DEMO-10231
+Age: 63        Sex: Male         Date: 2026-10-24
+Location: Worcester, MA
+
+CHIEF COMPLAINT
+Persistent cough and unintended weight loss over 2 months.
+
+HISTORY OF PRESENT ILLNESS
+63-year-old former smoker (30 pack-years, quit 2015) with a biopsy-confirmed stage IIIB
+non-small cell lung carcinoma, presenting with worsening dyspnea on exertion and a 12-pound
+weight loss.
+
+ACTIVE DIAGNOSES / CONDITIONS
+- Non-small cell lung cancer (stage IIIB, dx 2026-08)
+- COPD
+- Hypertension
+
+SYMPTOMS
+Chronic cough, Dyspnea on exertion, Fatigue, Weight loss.
+
+CURRENT MEDICATIONS
+- Carboplatin AUC 5 IV, every 3 weeks (active)
+- Paclitaxel 200 mg/m2 IV, every 3 weeks (active)
+- Amlodipine 10 mg, once daily (active)
+- Albuterol inhaler 2 puffs, as needed (active)
+
+PREVIOUS TREATMENTS
+- Lobectomy evaluation - deferred (locally advanced)
+- Smoking cessation program (2015)
+
+ALLERGIES
+Penicillin (rash).
+
+LABS / MEASUREMENTS
+- ECOG performance status: 1  (2026-10-15)
+- Hemoglobin: 11.2 g/dL  (2026-10-15)
+- Platelets: 180 x10^9/L  (2026-10-15)
+- Creatinine: 0.9 mg/dL  (2026-10-15)
+- EGFR mutation: negative  (2026-09-02)
+- PD-L1 expression: 45%  (2026-09-02)
+
+ASSESSMENT / PLAN
+Discuss immunotherapy and targeted-therapy clinical trials for stage III NSCLC. Continue
+current chemotherapy cycle. Patient willing to travel up to 75 miles; open to overnight
+stays for infusion visits.

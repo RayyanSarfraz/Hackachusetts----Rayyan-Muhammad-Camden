@@ -12,8 +12,14 @@ function renderApp() {
   )
 }
 
+/** Switch from the default live flow into the guided-demo flow. */
+function gotoDemoMode() {
+  fireEvent.click(screen.getByRole('button', { name: /guided demo/i }))
+}
+
 /** Add the sample notes as a text document and analyze them. */
 async function analyzeSampleNotes() {
+  gotoDemoMode()
   // The paste area lives inside a collapsible <details>; the textarea is still
   // in the DOM and reachable by placeholder regardless of open state.
   const textarea = screen.getByPlaceholderText(/paste notes here/i)

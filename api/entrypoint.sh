@@ -16,7 +16,7 @@ fi
 python manage.py migrate --no-input
 
 # Development-only: seed clinical-trial data once, so a fresh `docker compose up`
-# works with no manual steps. This NEVER runs in production — there, trial data
+# works with no manual steps. This NEVER runs in production â€” there, trial data
 # is loaded deliberately via `python manage.py ingest_trials <csv>`.
 #
 # Guards: dev settings only, CSV must exist, and either store must be missing

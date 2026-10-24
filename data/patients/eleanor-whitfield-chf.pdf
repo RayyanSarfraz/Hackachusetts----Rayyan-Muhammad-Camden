@@ -1,0 +1,83 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1974 >>
+stream
+BT
+/F1 10 Tf
+15 TL
+54 750 Td
+(CONFIDENTIAL PATIENT INTAKE NOTE  \(FICTIONAL - DEMO DATA ONLY\)) Tj
+T* () Tj
+T* (Patient: Eleanor Whitfield          MRN: DEMO-10258) Tj
+T* (Age: 72        Sex: Female         Date: 2026-10-24) Tj
+T* (Location: Springfield, MA) Tj
+T* () Tj
+T* (CHIEF COMPLAINT) Tj
+T* (Shortness of breath and ankle swelling, worse when lying flat.) Tj
+T* () Tj
+T* (HISTORY OF PRESENT ILLNESS) Tj
+T* (72-year-old woman with heart failure with reduced ejection fraction \(HFrEF, EF 35%\) and) Tj
+T* (chronic kidney disease stage 3, presenting with progressive orthopnea, bilateral) Tj
+T* (lower-extremity edema, and a 6-pound weight gain over one week.) Tj
+T* () Tj
+T* (ACTIVE DIAGNOSES / CONDITIONS) Tj
+T* (- Heart failure with reduced ejection fraction \(EF 35%\)) Tj
+T* (- Chronic kidney disease, stage 3) Tj
+T* (- Atrial fibrillation) Tj
+T* (- Type 2 diabetes mellitus) Tj
+T* () Tj
+T* (SYMPTOMS) Tj
+T* (Orthopnea, Lower-extremity edema, Fatigue, Palpitations.) Tj
+T* () Tj
+T* (CURRENT MEDICATIONS) Tj
+T* (- Furosemide 40 mg, twice daily \(active\)) Tj
+T* (- Carvedilol 12.5 mg, twice daily \(active\)) Tj
+T* (- Sacubitril/valsartan 49/51 mg, twice daily \(active\)) Tj
+T* (- Apixaban 5 mg, twice daily \(active\)) Tj
+T* (- Empagliflozin 10 mg, once daily \(active\)) Tj
+T* () Tj
+T* (PREVIOUS TREATMENTS) Tj
+T* (- Cardiac catheterization \(2024, no intervention\)) Tj
+T* (- Cardioversion for atrial fibrillation \(2023\)) Tj
+T* () Tj
+T* (ALLERGIES) Tj
+T* (Sulfa drugs \(hives\).) Tj
+T* () Tj
+T* (LABS / MEASUREMENTS) Tj
+T* (- NT-proBNP: 2450 pg/mL  \(2026-10-19\)) Tj
+T* (- Ejection fraction: 35 %  \(2026-09-14\)) Tj
+T* (- eGFR: 48 mL/min/1.73m2  \(2026-10-19\)) Tj
+T* (- Potassium: 4.6 mmol/L  \(2026-10-19\)) Tj
+T* (- HbA1c: 6.9 %  \(2026-10-02\)) Tj
+T* () Tj
+T* (ASSESSMENT / PLAN) Tj
+T* (Evaluate for HFrEF device and drug trials. Optimize diuresis. Patient has limited mobility;) Tj
+T* (prefers trial sites within 25 miles and no overnight stays.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000002267 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2364
+%%EOF

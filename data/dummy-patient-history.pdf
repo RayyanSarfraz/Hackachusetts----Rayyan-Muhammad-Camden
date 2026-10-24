@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1060 >>
+stream
+BT
+/F1 11 Tf
+16 TL
+72 740 Td
+(FICTIONAL PATIENT MEDICAL HISTORY - DEMO DATA ONLY) Tj
+T* () Tj
+T* (The patient is a 31-year-old male.) Tj
+T* (The patient's primary condition is Major Depressive Disorder.) Tj
+T* (The patient lives in Cambridge, Massachusetts.) Tj
+T* () Tj
+T* (Medical history:) Tj
+T* (The patient was diagnosed with Major Depressive Disorder in 2021.) Tj
+T* (The patient also has generalized anxiety.) Tj
+T* (The patient has no history of psychosis or bipolar disorder.) Tj
+T* () Tj
+T* (Symptoms: the patient reports low mood, loss of interest, poor sleep,) Tj
+T* (and difficulty concentrating.) Tj
+T* () Tj
+T* (Current medications: the patient takes Sertraline 100 mg once daily) Tj
+T* (for depression.) Tj
+T* () Tj
+T* (Previous treatments: the patient tried Fluoxetine in 2021, which was) Tj
+T* (stopped due to side effects. The patient completed a course of) Tj
+T* (cognitive behavioral therapy in 2022.) Tj
+T* () Tj
+T* (The patient is looking for clinical trials for depression.) Tj
+T* (The patient prefers studies in the Boston area.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001353 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1450
+%%EOF

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HealthData locale="en_US">
+  <Me HKCharacteristicTypeIdentifierBiologicalSex="HKBiologicalSexFemale" HKCharacteristicTypeIdentifierDateOfBirth="1985-07-28"/>
+  <Record type="HKQuantityTypeIdentifierAnti-CCPantibody" value="positive" startDate="2026-09-30 09:00:00 -0500" endDate="2026-09-30 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierRheumatoidfactor" value="88" unit="IU/mL" startDate="2026-09-30 09:00:00 -0500" endDate="2026-09-30 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierCRP" value="14" unit="mg/L" startDate="2026-10-10 09:00:00 -0500" endDate="2026-10-10 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierESR" value="42" unit="mm/hr" startDate="2026-10-10 09:00:00 -0500" endDate="2026-10-10 09:00:00 -0500"/>
+  <Record type="HKQuantityTypeIdentifierTSH" value="2.1" unit="mIU/L" startDate="2026-10-10 09:00:00 -0500" endDate="2026-10-10 09:00:00 -0500"/>
+</HealthData>

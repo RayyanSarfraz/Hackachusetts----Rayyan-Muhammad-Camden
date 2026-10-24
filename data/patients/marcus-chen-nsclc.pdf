@@ -1,0 +1,83 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1917 >>
+stream
+BT
+/F1 10 Tf
+15 TL
+54 750 Td
+(CONFIDENTIAL PATIENT INTAKE NOTE  \(FICTIONAL - DEMO DATA ONLY\)) Tj
+T* () Tj
+T* (Patient: Marcus Chen          MRN: DEMO-10231) Tj
+T* (Age: 63        Sex: Male         Date: 2026-10-24) Tj
+T* (Location: Worcester, MA) Tj
+T* () Tj
+T* (CHIEF COMPLAINT) Tj
+T* (Persistent cough and unintended weight loss over 2 months.) Tj
+T* () Tj
+T* (HISTORY OF PRESENT ILLNESS) Tj
+T* (63-year-old former smoker \(30 pack-years, quit 2015\) with a biopsy-confirmed stage IIIB) Tj
+T* (non-small cell lung carcinoma, presenting with worsening dyspnea on exertion and a 12-pound) Tj
+T* (weight loss.) Tj
+T* () Tj
+T* (ACTIVE DIAGNOSES / CONDITIONS) Tj
+T* (- Non-small cell lung cancer \(stage IIIB, dx 2026-08\)) Tj
+T* (- COPD) Tj
+T* (- Hypertension) Tj
+T* () Tj
+T* (SYMPTOMS) Tj
+T* (Chronic cough, Dyspnea on exertion, Fatigue, Weight loss.) Tj
+T* () Tj
+T* (CURRENT MEDICATIONS) Tj
+T* (- Carboplatin AUC 5 IV, every 3 weeks \(active\)) Tj
+T* (- Paclitaxel 200 mg/m2 IV, every 3 weeks \(active\)) Tj
+T* (- Amlodipine 10 mg, once daily \(active\)) Tj
+T* (- Albuterol inhaler 2 puffs, as needed \(active\)) Tj
+T* () Tj
+T* (PREVIOUS TREATMENTS) Tj
+T* (- Lobectomy evaluation - deferred \(locally advanced\)) Tj
+T* (- Smoking cessation program \(2015\)) Tj
+T* () Tj
+T* (ALLERGIES) Tj
+T* (Penicillin \(rash\).) Tj
+T* () Tj
+T* (LABS / MEASUREMENTS) Tj
+T* (- ECOG performance status: 1  \(2026-10-15\)) Tj
+T* (- Hemoglobin: 11.2 g/dL  \(2026-10-15\)) Tj
+T* (- Platelets: 180 x10^9/L  \(2026-10-15\)) Tj
+T* (- Creatinine: 0.9 mg/dL  \(2026-10-15\)) Tj
+T* (- EGFR mutation: negative  \(2026-09-02\)) Tj
+T* (- PD-L1 expression: 45%  \(2026-09-02\)) Tj
+T* () Tj
+T* (ASSESSMENT / PLAN) Tj
+T* (Discuss immunotherapy and targeted-therapy clinical trials for stage III NSCLC. Continue) Tj
+T* (current chemotherapy cycle. Patient willing to travel up to 75 miles; open to overnight) Tj
+T* (stays for infusion visits.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000002210 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2307
+%%EOF
