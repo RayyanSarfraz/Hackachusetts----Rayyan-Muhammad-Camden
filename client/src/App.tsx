@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useApp } from './state/AppContext'
 import { Header } from './components/Header'
 import { WorkflowSteps } from './components/WorkflowSteps'
@@ -7,15 +8,40 @@ import { MatchingResults } from './components/MatchingResults'
 import { NextBestQuestion } from './components/NextBestQuestion'
 import { AssessmentChanges } from './components/AssessmentChanges'
 import { TravelPreferences } from './components/TravelPreferences'
+import { RealTrialSearch } from './components/RealTrialSearch'
+
+type Mode = 'demo' | 'live'
 
 function App() {
   const { state, dispatch } = useApp()
+  const [mode, setMode] = useState<Mode>('demo')
 
   return (
     <div className="min-h-screen bg-slate-50 text-navy">
       <Header />
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mb-6 inline-flex rounded-lg border border-slate-300 bg-white p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setMode('demo')}
+            className={`focus-ring rounded-md px-3 py-1.5 font-medium ${mode === 'demo' ? 'bg-navy text-white' : 'text-slate-500'}`}
+          >
+            Guided demo
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('live')}
+            className={`focus-ring rounded-md px-3 py-1.5 font-medium ${mode === 'live' ? 'bg-navy text-white' : 'text-slate-500'}`}
+          >
+            Real trial search
+          </button>
+        </div>
+
+        {mode === 'live' && <RealTrialSearch />}
+
+        {mode === 'demo' && (
+        <>
         <WorkflowSteps current={state.step} />
 
         {state.step === 'intake' && (
@@ -60,6 +86,8 @@ function App() {
               <TravelPreferences />
             </div>
           </div>
+        )}
+        </>
         )}
       </main>
 
